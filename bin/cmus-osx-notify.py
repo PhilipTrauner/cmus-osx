@@ -5,7 +5,17 @@ from Foundation import NSUserNotification
 from Foundation import NSUserNotificationCenter
 import AppKit
 
-display_mode = 1
+# constants
+# DISPLAY_MODE controls the notification verbosity
+#  0 shows nothing, immediately quits
+#  1 replace old notification with new one in notification center
+#  2 clears old notifications, add new one
+#  3 shows a new notification for each cmus status change
+DISPLAY_MODE = 2
+# the icon file path for notification, or set as '' to disable icon displaying
+ICON_PATH    = '/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/Actions.icns'
+
+
 #------------------------------------------------------------------------------
 class CmusArguments:
     def __init__(self, argv):
@@ -24,7 +34,7 @@ class CmusArguments:
         argc = len(argv)
         if argc < 4:
             print('invalid arguments')
-            return
+            sys.exit(1)
 
         n = 1
         while n < argc:
@@ -51,6 +61,7 @@ class CmusArguments:
 
             n += 1
 
+
     def make(self):
         if self.tags['status']:
             self.title = 'cmus {status}'.format(**self.tags)
@@ -74,29 +85,31 @@ class CmusArguments:
 #------------------------------------------------------------------------------
 class Notification:
     def __init__(self):
-        self.notification = NSUserNotification.alloc().init()
+        pass
 
     def show(self, title, subtitle, message):
         center = NSUserNotificationCenter.defaultUserNotificationCenter()
+        notification = NSUserNotification.alloc().init()
 
-        self.notification.setTitle_(title)
-        self.notification.setSubtitle_(subtitle.decode('utf-8'))
-        self.notification.setInformativeText_(message.decode('utf-8'))
+        notification.setTitle_(title)
+        notification.setSubtitle_(subtitle.decode('utf-8'))
+        notification.setInformativeText_(message.decode('utf-8'))
 
-        iconPath = '/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/Actions.icns'
-        img = AppKit.NSImage.alloc().initByReferencingFile_(iconPath)
-        self.notification.setContentImage_(img)
+        if ICON_PATH:
+            img = AppKit.NSImage.alloc().initByReferencingFile_(ICON_PATH)
+            notification.setContentImage_(img)
 
-        if display_mode == 1:
+        if DISPLAY_MODE == 1:
+            notification.setIdentifier_('cmus')
+        elif DISPLAY_MODE == 2:
             center.removeAllDeliveredNotifications()
-        elif display_mode == 2:
-            self.notification.setIdentifier_('cmus')
 
-        center.deliverNotification_(self.notification)
+        center.deliverNotification_(notification)
+
 
 #------------------------------------------------------------------------------
 def main():
-    if display_mode == 0:
+    if DISPLAY_MODE == 0:
         return
 
     cmus = CmusArguments(sys.argv)
