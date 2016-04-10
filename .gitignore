@@ -1,0 +1,51 @@
+# 3rdparty, tmp and build direcotry
+3rdparty
+build
+tmp
+xbin
+docs
+res/
+TODO.md
+tags
+
+# ahh! OSX finder!
+.directory
+.DS_Store
+
+# key files
+*.pem
+
+# temp files
+Makefile*
+*.user
+*.autosave
+*.~
+*.o
+*.qmake.stash
+*.pro.user*
+*.bak
+*.log
+*_plugin_import.cpp
+*.swp
+*.pyc
+
+# Visual studio
+*.htm
+*.html
+*.ncb
+*.idb
+*.suo
+*.pdb
+*.vcxproj.filters
+*.vcproj
+*.vcxproj
+*.sln
+*.rc
+
+# node.js external modules
+node_modules
+# YouCompleteMe
+.vimrc
+.gvimrc
+.ycm_extra_conf.*
+
