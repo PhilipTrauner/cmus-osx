@@ -2,13 +2,11 @@
 
 import subprocess
 import os
+import signal
 from distutils.spawn import find_executable
 
 class Launcher():
     """a launcher class to control MacBook media key watcher and the cmus itself"""
-
-    def __init__(self):
-        pass
 
     def start(self):
         """finds sub processes and executes them"""
@@ -58,6 +56,13 @@ class Launcher():
 
 
     def __enter__(self):
+        self.SIG = signal.SIGTERM
+        self.org_handler = signal.getsignal(self.SIG)
+        def handler(signum, frame):
+            self.stop()
+            signal.signal(self.SIG, self.org_handler)
+
+        signal.signal(self.SIG, handler)
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
