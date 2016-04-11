@@ -51,13 +51,15 @@ class CmusArguments:
                 self.tags['album'] = argv[n]
             elif arg == 'tracknumber':
                 n += 1
-                self.tags['track'] = argv[n]
+                if argv[n] and argv[n] != '0':
+                    self.tags['track'] = argv[n]
             elif arg == 'title':
                 n += 1
                 self.tags['title'] = argv[n]
             elif arg == 'date':
                 n += 1
-                self.tags['date'] = argv[n]
+                if argv[n] and argv[n] != '0':
+                    self.tags['date'] = argv[n]
 
             n += 1
 
