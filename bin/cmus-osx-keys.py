@@ -54,9 +54,10 @@ if __name__ == '__main__':
         print('another instance is already running')
         sys.exit(1)
 
-    subprocess.call(['launchctl',
-        'unload',
-        '-w', '/System/Library/LaunchAgents/com.apple.rcd.plist'])
+    # unload rcd agent, release media keys
+    subprocess.call(['launchctl', 'unload',
+        '-w', '/System/Library/LaunchAgents/com.apple.rcd.plist'
+        ])
 
     # run osx app
     app = KeySocketApp.sharedApplication()

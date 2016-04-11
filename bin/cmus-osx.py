@@ -44,6 +44,9 @@ class Launcher():
             try:
                 print('try to kill key watcher (pid={}) ...'.format(self.proc_keys.pid))
                 self.proc_keys.terminate()
+                subprocess.call(['launchctl', 'load',
+                    '-w', '/System/Library/LaunchAgents/com.apple.rcd.plist'
+                    ])
             except:
                 pass
 
@@ -71,10 +74,7 @@ class Launcher():
 
 #------------------------------------------------------------------------------
 
-def main():
+if __name__ == '__main__':
     """launch application"""
     with Launcher() as app:
         app.start()
-
-if __name__ == '__main__':
-    main()
