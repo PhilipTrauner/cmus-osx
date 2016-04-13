@@ -37,6 +37,19 @@ $> cmus-osx.py
 
 now everything (media keys and notification center) should just works.
 
+## dependencies
+in order to use `cmus-osx` you need:
+
+- `OS X` and `cmus`!
+```bash
+$> brew install cmus`
+```
+
+- [`pyobjc`](https://en.wikipedia.org/wiki/PyObjC) as `python` and `objective-c` bridge.
+```bash
+$> pip install -U pyobjc
+```
+more info on [installing `pyobjc`](http://pythonhosted.org/pyobjc/install.html)
 
 ----
 
@@ -74,6 +87,29 @@ this script parses input arguments from `cmus` and makes notifications.
 - tries to revert the media keys control back to `/System/Library/LaunchAgents/com.apple.rcd.plist`
 
 
+## troubleshooting
+
+### media keys
+after normally quitting from `cmus` (which had been called by `cmus-osx.py` internally),
+ the control of media key will be set to default. so the `itunes` should be called immediately after
+ you press *play* or … button.
+
+if for any reason media keys fail to launch `itunes`:
+```bash
+$> launchctl load -w /System/Library/LaunchAgents/com.apple.rcd.plist
+```
+
+> please note that `unload` just takes the control off from `itunes`
+
+### forcefully terminate
+on some rare occasions `cmus` refused to respond to any input and just hangs,
+ esp. playing files from a lost `cifs`/`smb` mounted folder or after resuming from *Sleep Mode*.
+
+in such cases you may like to use:
+```bash
+$> ps aux | grep cmus
+$> kill -SIGKILL __cmus_process_id__
+```
 
 ---
 
