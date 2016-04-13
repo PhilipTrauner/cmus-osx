@@ -5,6 +5,7 @@ import sys
 import shutil
 import platform
 import re
+import json
 from distutils.spawn import find_executable
 
 #constants
@@ -12,9 +13,11 @@ INSTALL_PATH = '/usr/local/bin'
 CMUS_SCRIPTS = ['cmus-osx.py', 'cmus-osx-keys.py', 'cmus-osx-notify.py']
 CURR_PATH    = os.path.dirname(os.path.abspath(__file__))
 
-CMUS_CONFIG  = os.path.expanduser('~/.config/cmus/autosave')
-NOTIFY_APP   = os.path.join(INSTALL_PATH, 'cmus-osx-notify.py')
-NOTIFY_KEY   = 'set status_display_program'
+CMUS_CONFIG     = os.path.expanduser('~/.config/cmus/autosave')
+CMUS_OSX_CONFIG = os.path.expanduser('~/.config/cmus/cmus-osx.json')
+NOTIFY_APP      = os.path.join(INSTALL_PATH, 'cmus-osx-notify.py')
+NOTIFY_KEY      = 'set status_display_program'
+
 
 class Setup():
 
@@ -85,6 +88,21 @@ class Setup():
                         fout.write(line)
                     print('  cmus configured: {} notification script'
                             .format('using' if add else 'stop using'))
+
+            # cmus-osx.json as config file
+            if add is True:
+                # create a default config file
+                options = {
+                        'install_path' : INSTALL_PATH,
+                        'notify' : {
+                            'mode' : 2,
+                            'icon_path': '/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/Actions.icns'
+                            }
+                        }
+                with open(CMUS_OSX_CONFIG, "w") as jfile:
+                    json.dump(options, jfile, indent=4)
+
+
         else:
             print('warning: {} not found, please configure notification script manually'
                     .format(CMUS_CONFIG))
