@@ -31,10 +31,30 @@ class Setup():
         if platform.system() != 'Darwin':
             print("error: this utility only works under OS X.\n  your platform does not need cmus-osx\n")
             sys.exit(1)
+        else:
+            v, _, p = platform.mac_ver()
+            print("  verified: OS X {} / {}".format(v, p))
 
-        if find_executable('cmus') is None:
+        cmus_path = find_executable('cmus')
+        if cmus_path is None:
             print("error: cmus not found!\n  please first install cmus on OS X.\n")
             sys.exit(1)
+        else:
+            print("  verified: cmus path: {}".format(cmus_path))
+
+        # check pyobjc
+        try:
+            from Foundation import NSUserNotification
+            from AppKit import NSApplication
+            from PyObjCTools import AppHelper
+        except:
+            print("error: to use this utility you need to install 'pyobjc' package first."
+                    "\n  please just install it by `pip` or see the README.md for more information."
+                    "\n  then simply reinstall `cmus-osx` again.");
+            sys.exit(1)
+
+        print("  verified: `pyobjc` has been found.\n")
+
 
     def __copy_files(self):
         if not os.path.exists(INSTALL_PATH):
@@ -76,7 +96,7 @@ class Setup():
 
 #------------------------------------------------------------------------------
 if __name__ == '__main__':
-    s   = Setup()
+    s = Setup()
     cmd = 'install' if len(sys.argv) < 2 else sys.argv[1]
 
     if cmd == 'install' or cmd == '-i':

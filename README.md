@@ -42,7 +42,7 @@ in order to use `cmus-osx` you need:
 
 - `OS X` and `cmus`!
 ```bash
-$> brew install cmus`
+$> brew install cmus
 ```
 
 - [`pyobjc`](https://en.wikipedia.org/wiki/PyObjC) as `python` and `objective-c` bridge.
