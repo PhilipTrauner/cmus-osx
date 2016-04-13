@@ -43,7 +43,7 @@ class Setup():
         for sf in CMUS_SCRIPTS:
             sf_path = os.path.join(INSTALL_PATH, sf)
             print('  copy to: {}'.format(sf_path))
-            shutil.copy('./bin/{}'.format(sf), INSTALL_PATH)
+            shutil.copy(os.path.join('./bin', sf), INSTALL_PATH)
             os.chmod(sf_path, 0755)
 
     def __remove_files(self):

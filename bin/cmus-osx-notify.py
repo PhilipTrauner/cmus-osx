@@ -1,9 +1,13 @@
 #!/usr/bin/python
 import sys
 
-from Foundation import NSUserNotification
-from Foundation import NSUserNotificationCenter
-import AppKit
+try:
+    from Foundation import NSUserNotification
+    from Foundation import NSUserNotificationCenter
+    import AppKit
+except ImportError as e:
+    print('error: you need pyobjc package to use this feature.\n')
+    raise e
 
 # constants
 # DISPLAY_MODE controls the notification verbosity
@@ -110,7 +114,7 @@ class Notification:
 
 
 #------------------------------------------------------------------------------
-def main():
+if __name__ == '__main__':
     if DISPLAY_MODE == 0:
         return
 
@@ -119,8 +123,4 @@ def main():
     if cmus.title:
         noti = Notification()
         noti.show(cmus.title, cmus.subtitle, cmus.message)
-
-if __name__ == '__main__':
-    main()
-
 

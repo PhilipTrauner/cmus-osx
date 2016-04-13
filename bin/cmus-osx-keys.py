@@ -5,8 +5,12 @@ import subprocess
 import fcntl
 
 # PyObjC-related imports
-from AppKit import NSApplication, NSSystemDefined
-from PyObjCTools import AppHelper
+try:
+    from AppKit import NSApplication, NSSystemDefined
+    from PyObjCTools import AppHelper
+except ImportError as e:
+    print('error: you need pyobjc package to use this feature.\n')
+    raise e
 
 # constants
 KEY_UP = 11
