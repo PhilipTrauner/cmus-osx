@@ -29,6 +29,13 @@ cmus-osx/> ./setup.py uninstall
 
 ```
 
+the **default** installation path is `/usr/local/bin`.
+to install on another location simply pass your path:
+```bash
+# install on a custom directory
+# cmus-osx/> ./setup install /opt/bin
+```
+
 ## usage
 in your console, just launch `cmus-osx.py` instead of `cmus`:
 ```bash

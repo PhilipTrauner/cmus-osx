@@ -15,11 +15,12 @@ CURR_PATH    = os.path.dirname(os.path.abspath(__file__))
 
 CMUS_CONFIG     = os.path.expanduser('~/.config/cmus/autosave')
 CMUS_OSX_CONFIG = os.path.expanduser('~/.config/cmus/cmus-osx.json')
-NOTIFY_APP      = os.path.join(INSTALL_PATH, 'cmus-osx-notify.py')
 NOTIFY_KEY      = 'set status_display_program'
 
 
 class Setup():
+    def __init__(self):
+        self.install_path = INSTALL_PATH
 
     def install(self):
         self.__check_dependecies()
@@ -60,18 +61,19 @@ class Setup():
 
 
     def __copy_files(self):
-        if not os.path.exists(INSTALL_PATH):
-            os.makedirs(INSTALL_PATH)
+        if not os.path.exists(self.install_path):
+            os.makedirs(self.install_path)
 
         for sf in CMUS_SCRIPTS:
-            sf_path = os.path.join(INSTALL_PATH, sf)
+            sf_path = os.path.join(self.install_path, sf)
             print('  copy to: {}'.format(sf_path))
-            shutil.copy(os.path.join('./bin', sf), INSTALL_PATH)
+            shutil.copy(os.path.join('./bin', sf), self.install_path)
             os.chmod(sf_path, 0755)
 
     def __remove_files(self):
+        self.__read_installation_folder()
         for sf in CMUS_SCRIPTS:
-            sf_path = os.path.join(INSTALL_PATH, sf)
+            sf_path = os.path.join(self.install_path, sf)
             if os.path.exists(sf_path):
                 print('  removed: {}'.format(sf_path))
                 os.remove(sf_path)
@@ -82,7 +84,7 @@ class Setup():
             with open(CMUS_CONFIG, "wt") as fout:
                 with open(CMUS_CONFIG + '.bak', "rt") as fin:
                     regex  = re.compile('^{}.*$'.format(NOTIFY_KEY))
-                    newval = NOTIFY_APP if add else ''
+                    newval = os.path.join(self.install_path, 'cmus-osx-notify.py') if add else ''
                     for line in fin:
                         line = regex.sub('{}={}'.format(NOTIFY_KEY, newval), line)
                         fout.write(line)
@@ -93,7 +95,7 @@ class Setup():
             if add is True:
                 # create a default config file
                 options = {
-                        'install_path' : INSTALL_PATH,
+                        'install_path' : self.install_path,
                         'notify' : {
                             'mode' : 2,
                             'icon_path': '/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/Actions.icns'
@@ -102,14 +104,18 @@ class Setup():
                 with open(CMUS_OSX_CONFIG, "w") as jfile:
                     json.dump(options, jfile, indent=4)
 
-
         else:
             print('warning: {} not found, please configure notification script manually'
                     .format(CMUS_CONFIG))
 
 
-
-
+    def __read_installation_folder(self):
+        with open(CMUS_OSX_CONFIG, "r") as jfile:
+            try:
+                root = json.load(jfile)
+                self.install_path = root['install_path']
+            except:
+                pass
 
 
 #------------------------------------------------------------------------------
@@ -118,11 +124,16 @@ if __name__ == '__main__':
     cmd = 'install' if len(sys.argv) < 2 else sys.argv[1]
 
     if cmd == 'install' or cmd == '-i':
+        if len(sys.argv) == 3:
+            s.install_path = sys.argv[2]
+
         s.install()
 
     elif cmd == 'uninstall' or cmd == '-u':
         s.uninstall()
 
     else:
-        print("error: invalid argument.\n  $>./setup.py install\n  $>./setup.py uninstall")
+        print("error: invalid argument.\n"
+              "  $>./setup.py install [installation_path]\n"
+              "  $>./setup.py uninstall")
 

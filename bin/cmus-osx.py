@@ -42,7 +42,7 @@ class Launcher():
 
         if hasattr(self, 'proc_keys') and self.proc_keys.pid:
             try:
-                print('try to kill key watcher (pid={}) ...'.format(self.proc_keys.pid))
+                print('try to stop key watcher (pid={}) ...'.format(self.proc_keys.pid))
                 self.proc_keys.terminate()
                 subprocess.call(['launchctl', 'load',
                     '-w', '/System/Library/LaunchAgents/com.apple.rcd.plist'
@@ -52,7 +52,7 @@ class Launcher():
 
         if hasattr(self, 'proc_cmus') and self.proc_cmus:
             try:
-                print('try to kill cmus (pid={}) ...'.format(self.proc_cmus.pid))
+                print('try to stop cmus (pid={}) ...'.format(self.proc_cmus.pid))
                 self.proc_cmus.terminate()
             except:
                 pass
