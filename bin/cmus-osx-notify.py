@@ -133,9 +133,11 @@ class OptionLoader():
                if 'notify' in root:
                    notify = root['notify']
                    if 'mode' in notify:
+                       global DISPLAY_MODE
                        DISPLAY_MODE = notify['mode']
 
                    if 'icon_path' in notify:
+                       global ICON_PATH
                        ICON_PATH = notify['icon_path']
 
 

@@ -33,11 +33,11 @@ the **default** installation path is `/usr/local/bin`.
 to install on another location simply pass your path:
 ```bash
 # install on a custom directory
-# cmus-osx/> ./setup install /opt/bin
+cmus-osx/> ./setup install /opt/bin
 ```
 
 ## usage
-in your console, just launch `cmus-osx.py` instead of `cmus`:
+on your terminal, just launch `cmus-osx.py` instead of `cmus`:
 ```bash
 $> cmus-osx.py
 ```
@@ -70,6 +70,28 @@ on installation, the `setup.py`:
 - copies three python scripts from [`./bin/`](./bin/) directory to `/usr/local/bin/` (as default installation path).
  this path is defined is [`setup.py`](./setup.py), edit to your favorite value.
 - tries to configure `cmus` to use notification center script by modifying: `~/.config/cmus/autosave`.
+
+
+### configs
+the setup process tries to make a `json` configuration file as `~/.config/cmus/cmus-osx.json`.
+this file contains the installation folder and notification app:
+```json
+{
+  "install_path": "/usr/local/bin",
+  "notify": {
+    "icon_path": "/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/Actions.icns",
+    "mode": 2
+  }
+}
+```
+
+- `icon_path`: the path of an icon for displaying in notification badge.
+ to disable the icon just pass an empty `''` string.
+- `mode`:
+  *  0 disables notification (shows nothing)
+  *  1 replace the old notification with new one in notification center
+  *  2 clears the old notifications, add new one
+  *  3 shows a new notification for each cmus status change
 
 
 ### scripts
