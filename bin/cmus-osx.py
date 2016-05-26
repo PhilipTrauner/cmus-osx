@@ -11,29 +11,24 @@ class Launcher():
     def start(self):
         """finds sub processes and executes them"""
 
-        python_path = find_executable('python')
-        cmus_path   = find_executable('cmus')
-        curr_dir    = os.path.dirname(os.path.abspath(__file__))
-        key_path    = os.path.join(curr_dir, 'cmus-osx-keys.py')
-
+        cmus_path = find_executable('cmus')
         if cmus_path is None:
             print('can not find cmus in your path, probably it\'s not installed yet')
             return # stop application
 
-        FNULL = open(os.devnull, 'w') # sink to null
-
+        python_path = find_executable('python')
+        curr_dir    = os.path.dirname(os.path.abspath(__file__))
+        key_path    = os.path.join(curr_dir, 'cmus-osx-keys.py')
         try: # cmus-osx-keys.py is optional
-            self.proc_keys = subprocess.Popen([python_path, key_path],
-                    stdout=FNULL, stderr=subprocess.STDOUT
-                    )
+            self.proc_keys = subprocess.Popen(['/usr/bin/python', key_path])
         except:
             print('can not start macbook key watcher as: cmus-osx-keys.py')
             pass
 
         # cmus subprocess
-        self.proc_cmus = subprocess.Popen([cmus_path],
-                stderr=FNULL
-                )
+        FNULL = open(os.devnull, 'w')
+        # sink cmus errors and warnings to /dev/null
+        self.proc_cmus = subprocess.Popen([cmus_path], stderr=FNULL)
         self.proc_cmus.communicate()
 
 
