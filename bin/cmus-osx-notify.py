@@ -11,6 +11,12 @@ except ImportError as e:
     print('error: you need pyobjc package to use this feature.\n')
     raise e
 
+try:
+    import eyed3
+    HAS_EYED3 = True
+except:
+    HAS_EYED3 = False
+    pass
 
 CMUS_OSX_CONFIG = os.path.expanduser('~/.config/cmus/cmus-osx.json')
 UPDATE_OPTIONS_FROM_CONFIG = True
@@ -26,7 +32,8 @@ UPDATE_OPTIONS_FROM_CONFIG = True
 DISPLAY_MODE = 2
 
 # the icon file path for notification, or set as '' to disable icon displaying
-ICON_PATH    = '/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/Actions.icns'
+ICON_PATH     = '/tmp/cmus-osx-cover.jpg'
+FIX_ICON_PATH = '/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/Actions.icns'
 
 
 #------------------------------------------------------------------------------
@@ -35,6 +42,7 @@ class CmusArguments:
         self.title    = ''
         self.subtitle = ''
         self.message  = ''
+        self.cover    = ''
         self.tags     = {
                 'status': '',
                 'artist': '',
@@ -49,33 +57,29 @@ class CmusArguments:
             print('invalid arguments')
             sys.exit(1)
 
-        n = 1
-        while n < argc:
-            arg = argv[n]
+        d = dict(zip(argv[1::2], argv[2::2]))
 
-            if arg == 'status':
-                n += 1
-                self.tags['status'] = argv[n]
-            elif arg == 'artist':
-                n += 1
-                self.tags['artist'] = argv[n]
-            elif arg == 'album':
-                n += 1
-                self.tags['album'] = argv[n]
-            elif arg == 'tracknumber':
-                n += 1
-                if argv[n] and argv[n] != '0':
-                    self.tags['track'] = argv[n]
-            elif arg == 'title':
-                n += 1
-                self.tags['title'] = argv[n]
-            elif arg == 'date':
-                n += 1
-                if argv[n] and argv[n] != '0':
-                    self.tags['date'] = argv[n]
+        def copyTo(tag):
+            if tag in d:
+                self.tags[tag] = d[tag]
 
-            n += 1
-
+        copyTo('status')
+        copyTo('artist')
+        copyTo('album')
+        copyTo('title')
+        if 'tracknumber' in d and d['tracknumber'] != '0':
+            self.tags['track'] = d['tracknumber']
+        if 'date' in d and d['date'] != '0':
+            self.tags['date'] = d['date']
+        if 'file' in d and HAS_EYED3:
+            try:
+                faudio = eyed3.load(d['file'])
+                if len(faudio.tag.images) > 0:
+                    with open(ICON_PATH, 'w') as fpic:
+                        fpic.write(faudio.tag.images[0].image_data)
+                        self.cover = ICON_PATH
+            except:
+                pass
 
     def make(self):
         if self.tags['status']:
@@ -102,7 +106,7 @@ class Notification:
     def __init__(self):
         pass
 
-    def show(self, title, subtitle, message):
+    def show(self, title, subtitle, message, cover):
         center = NSUserNotificationCenter.defaultUserNotificationCenter()
         notification = NSUserNotification.alloc().init()
 
@@ -110,8 +114,11 @@ class Notification:
         notification.setSubtitle_(subtitle.decode('utf-8'))
         notification.setInformativeText_(message.decode('utf-8'))
 
-        if ICON_PATH:
-            img = AppKit.NSImage.alloc().initByReferencingFile_(ICON_PATH)
+        if cover: # the song has an embedded cover image
+            img = AppKit.NSImage.alloc().initByReferencingFile_(cover)
+            notification.setContentImage_(img)
+        elif ICON_PATH: # song has no cover image, show an icon
+            img = AppKit.NSImage.alloc().initByReferencingFile_(FIX_ICON_PATH)
             notification.setContentImage_(img)
 
         if DISPLAY_MODE == 1:
@@ -151,5 +158,5 @@ if __name__ == '__main__':
     cmus.make()
     if cmus.title:
         noti = Notification()
-        noti.show(cmus.title, cmus.subtitle, cmus.message)
+        noti.show(cmus.title, cmus.subtitle, cmus.message, cmus.cover)
 
