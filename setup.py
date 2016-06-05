@@ -57,7 +57,17 @@ class Setup():
                     "\n  then simply reinstall `cmus-osx` again.");
             sys.exit(1)
 
-        print("  verified: `pyobjc` has been found.\n")
+        print("  verified: `pyobjc` has been found.")
+
+        #check for eyeD3
+        try:
+            import eyed3
+            print("  verified: eyeD3")
+        except:
+            print("info: if you want to see albmum art thumbnail in"
+                " notification center, please install `eyeD3` by `pip` or see the"
+                " README.md for more information.");
+            pass
 
 
     def __copy_files(self):
@@ -98,7 +108,7 @@ class Setup():
                         'install_path' : self.install_path,
                         'notify' : {
                             'mode' : 2,
-                            'icon_path': '/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/Actions.icns'
+                            'icon_path': '/tmp/cmus-osx-cover.jpg'
                             }
                         }
                 with open(CMUS_OSX_CONFIG, "w") as jfile:
