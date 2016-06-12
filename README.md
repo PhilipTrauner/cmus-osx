@@ -3,6 +3,10 @@
 `cmus-osx` is a tiny utility to mate `cmus`<sup>[note](#cmus-player)</sup> and
 the media keys of a Mac and `OS X` notification center.
 
+> [vim-cmus](https://github.com/azadkuh/vim-cmus) is a sister project for
+> `nvim`/`vim` integration of `cmus`.
+
+
 ### media keys
 links media keys of a Mac to `cmus`:
 
@@ -12,11 +16,8 @@ links media keys of a Mac to `cmus`:
 optionally, links `cmus` to `OS X` notification center (by installing 3rdparty
  dependencies, the album art will also be displayed):
 
- ![OSX notifications](https://cloud.githubusercontent.com/assets/6501462/14425409/59c41d68-fffc-11e5-9d8b-a5d9a9a4c22d.gif)
+ ![OSX notifications](https://cloud.githubusercontent.com/assets/6501462/15991388/e04ede40-30c6-11e6-9958-6365060c5602.gif)
 
-
-> [vim-cmus](https://github.com/azadkuh/vim-cmus) is a sister project for
-> `nvim`/`vim` integration of `cmus`.
 
 ----
 

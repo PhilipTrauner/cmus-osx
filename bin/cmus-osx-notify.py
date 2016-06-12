@@ -1,14 +1,18 @@
 #!/usr/bin/env python
+
 import sys
 import os
 import json
+import logging
+logging.basicConfig(filename='/tmp/cmus-notify.log', filemode='w',
+        level=logging.INFO)
 
 try:
     from Foundation import NSUserNotification
     from Foundation import NSUserNotificationCenter
     import AppKit
 except ImportError as e:
-    print('error: you need pyobjc package to use this feature.\n')
+    log.critical('error: you need pyobjc package to use this feature.\n')
     raise e
 
 try:
@@ -32,8 +36,9 @@ UPDATE_OPTIONS_FROM_CONFIG = True
 DISPLAY_MODE = 2
 
 # the icon file path for notification, or set as '' to disable icon displaying
-ICON_PATH     = '/tmp/cmus-osx-cover.jpg'
-FIX_ICON_PATH = '/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/Actions.icns'
+ALBUMART_PATH       = '/tmp/cmus-osx-cover.jpg'
+DEFAULT_LOCAL_ICON  = '/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/Actions.icns'
+DEFAULT_STREAM_ICON = '/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/GenericNetworkIcon.icns'
 
 
 #------------------------------------------------------------------------------
@@ -47,14 +52,14 @@ class CmusArguments:
                 'status': '',
                 'artist': '',
                 'album': '',
-                'track': '',
+                'tracknumber': '',
                 'title': '',
                 'date': ''
                 }
 
         argc = len(argv)
         if argc < 4:
-            print('invalid arguments')
+            logging.critical('invalid arguments')
             sys.exit(1)
 
         d = dict(zip(argv[1::2], argv[2::2]))
@@ -67,26 +72,25 @@ class CmusArguments:
         copyTo('artist')
         copyTo('album')
         copyTo('title')
-        if 'tracknumber' in d and d['tracknumber'] != '0':
-            self.tags['track'] = d['tracknumber']
-        if 'date' in d and d['date'] != '0':
-            self.tags['date'] = d['date']
-        if 'file' in d and HAS_EYED3:
-            try:
-                faudio = eyed3.load(d['file'])
-                if len(faudio.tag.images) > 0:
-                    with open(ICON_PATH, 'w') as fpic:
-                        fpic.write(faudio.tag.images[0].image_data)
-                        self.cover = ICON_PATH
-            except:
-                pass
+        copyTo('tracknumber')
+        copyTo('date')
+        if 'file' in d: # local (also mounted) files
+            self.__parse_file_path__(d['file'])
+        elif 'url' in d: # streams
+            self.__parse_file_path__(d['url'])
 
     def make(self):
         if self.tags['status']:
+            def is_valid_int(v):
+                try:
+                    return True if int(v) > 0 else False
+                except Exception:
+                    return False;
+
             self.title = 'cmus {status}'.format(**self.tags)
 
-            if self.tags['track']:
-                self.subtitle += '{track}) '.format(**self.tags)
+            if is_valid_int(self.tags['tracknumber']):
+                self.subtitle += '{tracknumber}) '.format(**self.tags)
 
             if self.tags['title']:
                 self.subtitle += '{title}'.format(**self.tags)
@@ -97,8 +101,33 @@ class CmusArguments:
             if self.tags['album']:
                 self.message += '\n{album}'.format(**self.tags)
 
-            if self.tags['date']:
+            if is_valid_int(self.tags['date']):
                 self.message += ' ({date})'.format(**self.tags)
+
+
+    def __parse_file_path__(self, fpath):
+        #chech if the file has been come from an steam
+        if fpath.startswith(('http://', 'https://')):
+            self.cover = DEFAULT_STREAM_ICON
+            self.tags['status'] = self.tags['status'] + ' (streaming ...)'
+            # the title may contain both the artist and the song name
+            title = self.tags['title']
+            i = title.find(' - ')
+            if i > 0:
+                self.tags['artist'] = title[:i]
+                self.tags['title'] = title[i+3:]
+
+            return;
+
+        elif HAS_EYED3:
+            try:
+                faudio = eyed3.load(fpath)
+                if len(faudio.tag.images) > 0:
+                    with open(ALBUMART_PATH, 'w') as fpic:
+                        fpic.write(faudio.tag.images[0].image_data)
+                        self.cover = ALBUMART_PATH
+            except:
+                pass
 
 
 #------------------------------------------------------------------------------
@@ -117,8 +146,8 @@ class Notification:
         if cover: # the song has an embedded cover image
             img = AppKit.NSImage.alloc().initByReferencingFile_(cover)
             notification.setContentImage_(img)
-        elif ICON_PATH: # song has no cover image, show an icon
-            img = AppKit.NSImage.alloc().initByReferencingFile_(FIX_ICON_PATH)
+        elif ALBUMART_PATH: # song has no cover image, show an icon
+            img = AppKit.NSImage.alloc().initByReferencingFile_(DEFAULT_LOCAL_ICON)
             notification.setContentImage_(img)
 
         if DISPLAY_MODE == 1:
@@ -144,8 +173,8 @@ class OptionLoader():
                        DISPLAY_MODE = notify['mode']
 
                    if 'icon_path' in notify:
-                       global ICON_PATH
-                       ICON_PATH = notify['icon_path']
+                       global ALBUMART_PATH
+                       ALBUMART_PATH = notify['icon_path']
 
 
 #------------------------------------------------------------------------------
@@ -154,9 +183,12 @@ if __name__ == '__main__':
     if DISPLAY_MODE == 0:
         sys.exit(1) # do nothing and quit
 
-    cmus = CmusArguments(sys.argv)
-    cmus.make()
-    if cmus.title:
-        noti = Notification()
-        noti.show(cmus.title, cmus.subtitle, cmus.message, cmus.cover)
+    try:
+        cmus = CmusArguments(sys.argv)
+        cmus.make()
+        if cmus.title:
+            noti = Notification()
+            noti.show(cmus.title, cmus.subtitle, cmus.message, cmus.cover)
+    except Exception:
+        logging.exception("cmus nottify error!")
 

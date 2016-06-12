@@ -53,6 +53,12 @@ release media keys from itunes.
 this script parses input arguments from `cmus` and makes notifications.
 (`cmus` can be configured to run an external app to notify about status changes.)
 
+> if no notification is dispalyed, the `/tmp/cmus-notify.log` may help and
+> shows the error.
+
+this script also tries to extract the album art embedded in music file, or
+displays an static icon for local files or streams.
+
 #### main launcher
 [`./bin/cmus-osx.py`](./bin/cmus-osx.py)
 
