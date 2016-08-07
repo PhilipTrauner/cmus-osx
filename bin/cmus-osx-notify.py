@@ -16,10 +16,10 @@ except ImportError as e:
     raise e
 
 try:
-    import eyed3
-    HAS_EYED3 = True
+    from tinytag import TinyTag
+    HAS_TINYTAG = True
 except:
-    HAS_EYED3 = False
+    HAS_TINYTAG = False
     pass
 
 CMUS_OSX_CONFIG = os.path.expanduser('~/.config/cmus/cmus-osx.json')
@@ -119,12 +119,13 @@ class CmusArguments:
 
             return;
 
-        elif HAS_EYED3:
+        elif HAS_TINYTAG:
             try:
-                faudio = eyed3.load(fpath)
-                if len(faudio.tag.images) > 0:
+                tag = TinyTag.get(fpath, image=True)
+                image_data = tag.get_image()
+                if len(image_data) > 0:
                     with open(ALBUMART_PATH, 'w') as fpic:
-                        fpic.write(faudio.tag.images[0].image_data)
+                        fpic.write(image_data)
                         self.cover = ALBUMART_PATH
             except:
                 pass

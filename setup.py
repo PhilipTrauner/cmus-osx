@@ -61,11 +61,11 @@ class Setup():
 
         #check for eyeD3
         try:
-            import eyed3
-            print("  verified: eyeD3")
+            from tinytag import TinyTag
+            print("  verified: tinytag")
         except:
             print("info: if you want to see albmum art thumbnail in"
-                " notification center, please install `eyeD3` by `pip` or see the"
+                " notification center, please install `tinytag` v1.6+ by `pip` or see the"
                 " README.md for more information.");
             pass
 
