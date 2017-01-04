@@ -8,18 +8,25 @@ logging.basicConfig(filename='/tmp/cmus-notify.log', filemode='w',
         level=logging.INFO)
 
 try:
+    from AppKit import NSData, NSImage, NSBitmapImageRep, NSMakeSize
+    from Foundation import NSUserNotificationCenter
+    from Foundation import NSUserNotification
+    from Quartz import CGImageGetWidth, CGImageGetHeight    
+    """
     from Foundation import NSUserNotification
     from Foundation import NSUserNotificationCenter
     import AppKit
+    """
 except ImportError as e:
     log.critical('error: you need pyobjc package to use this feature.\n')
     raise e
 
 try:
-    from tinytag import TinyTag
-    HAS_TINYTAG = True
+    from mutagen import File
+    HAS_MUTAGEN = True
+    import thread
 except:
-    HAS_TINYTAG = False
+    HAS_MUTAGEN = False
     pass
 
 CMUS_OSX_CONFIG = os.path.expanduser('~/.config/cmus/cmus-osx.json')
@@ -36,10 +43,24 @@ UPDATE_OPTIONS_FROM_CONFIG = True
 DISPLAY_MODE = 2
 
 # the icon file path for notification, or set as '' to disable icon displaying
-ALBUMART_PATH       = '/tmp/cmus-osx-cover.jpg'
 DEFAULT_LOCAL_ICON  = '/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/Actions.icns'
-DEFAULT_STREAM_ICON = '/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/GenericNetworkIcon.icns'
+# NSImage because CmusArguments.cover should always be an NSImage
+DEFAULT_STREAM_ICON = NSImage.alloc().initByReferencingFile_('/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/GenericNetworkIcon.icns')
 
+APP_ICON_PATH = "/usr/local/share/cmus-osx/cmus-icon.png"
+
+APP_ICON = None
+
+if os.path.isfile(APP_ICON_PATH):
+    app_icon = open(APP_ICON_PATH).read()
+    data = NSData.alloc().initWithBytes_length_(app_icon, len(app_icon))
+    image_rep = NSBitmapImageRep.alloc().initWithData_(data)
+    size = NSMakeSize(CGImageGetWidth(image_rep), 
+        CGImageGetHeight(image_rep))
+    APP_ICON = NSImage.alloc().initWithSize_(size)
+    APP_ICON.addRepresentation_(image_rep)
+else:
+    log.critical("app icon could not be loaded\n")
 
 #------------------------------------------------------------------------------
 class CmusArguments:
@@ -47,7 +68,7 @@ class CmusArguments:
         self.title    = ''
         self.subtitle = ''
         self.message  = ''
-        self.cover    = ''
+        self.cover    = None
         self.tags     = {
                 'status': '',
                 'artist': '',
@@ -119,16 +140,20 @@ class CmusArguments:
 
             return;
 
-        elif HAS_TINYTAG:
-            try:
-                tag = TinyTag.get(fpath, image=True)
-                image_data = tag.get_image()
-                if len(image_data) > 0:
-                    with open(ALBUMART_PATH, 'w') as fpic:
-                        fpic.write(image_data)
-                        self.cover = ALBUMART_PATH
-            except:
-                pass
+        elif HAS_MUTAGEN:
+            cover = None
+            file = File(fpath)
+            # id3
+            if 'APIC:' in file:
+                cover = file['APIC:']
+                cover = cover.data
+            # mp4
+            elif 'covr' in file:
+                covers = file['covr']
+                if len(covers) > 0:
+                    cover = covers[0]
+            self.cover = cover
+
 
 
 #------------------------------------------------------------------------------
@@ -143,12 +168,19 @@ class Notification:
         notification.setTitle_(title)
         notification.setSubtitle_(subtitle.decode('utf-8'))
         notification.setInformativeText_(message.decode('utf-8'))
+        if APP_ICON:
+            notification.setValue_forKey_(APP_ICON, "_identityImage")
 
         if cover: # the song has an embedded cover image
-            img = AppKit.NSImage.alloc().initByReferencingFile_(cover)
-            notification.setContentImage_(img)
-        elif ALBUMART_PATH: # song has no cover image, show an icon
-            img = AppKit.NSImage.alloc().initByReferencingFile_(DEFAULT_LOCAL_ICON)
+            data = NSData.alloc().initWithBytes_length_(cover, len(cover))
+            image_rep = NSBitmapImageRep.alloc().initWithData_(data)
+            size = NSMakeSize(CGImageGetWidth(image_rep), 
+                CGImageGetHeight(image_rep))
+            image = NSImage.alloc().initWithSize_(size)
+            image.addRepresentation_(image_rep)
+            notification.setContentImage_(image)
+        else: # song has no cover image, show an icon
+            img = NSImage.alloc().initByReferencingFile_(DEFAULT_LOCAL_ICON)
             notification.setContentImage_(img)
 
         if DISPLAY_MODE == 1:
@@ -172,10 +204,6 @@ class OptionLoader():
                    if 'mode' in notify:
                        global DISPLAY_MODE
                        DISPLAY_MODE = notify['mode']
-
-                   if 'icon_path' in notify:
-                       global ALBUMART_PATH
-                       ALBUMART_PATH = notify['icon_path']
 
 
 #------------------------------------------------------------------------------
