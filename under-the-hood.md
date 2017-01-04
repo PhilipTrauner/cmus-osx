@@ -23,14 +23,11 @@ this file contains the installation folder and notification app:
 {
   "install_path": "/usr/local/bin",
   "notify": {
-    "icon_path": "/tmp/cmus-osx-cover.jpg",
     "mode": 2
   }
 }
 ```
 
-- `icon_path`: the temporary file path of album art if the song has one.
- to disable displaying the icon in notification, just pass an empty `""` string.
 - `mode` (or vebosity of notifications):
   *  0 disables notification (shows nothing in notification center)
   *  1 replace the old notification with new one in notification center
