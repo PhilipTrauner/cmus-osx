@@ -29,6 +29,7 @@ class KeySocketApp(NSApplication):
             keyState  = (keyFlags & 0xFF00) >> 8
             keyRepeat = keyFlags & 0x1
 
+
             if keyRepeat and keyState is not KEY_UP:
                 if keyCode == 20:
                     self.repeated = True
@@ -40,11 +41,11 @@ class KeySocketApp(NSApplication):
             if keyState is KEY_UP:
                 if self.repeated:
                     self.repeated = False
-                elif keyCode == 20:
+                elif keyCode == 20 or keyCode == 18:
                     subprocess.call(['cmus-remote', '-r'])
                 elif keyCode == 16:
                     subprocess.call(['cmus-remote', '-u'])
-                elif keyCode == 19:
+                elif keyCode == 19 or keyCode == 17:
                     subprocess.call(['cmus-remote', '-n'])
 
 
