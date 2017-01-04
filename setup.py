@@ -10,6 +10,7 @@ from distutils.spawn import find_executable
 
 #constants
 INSTALL_PATH = '/usr/local/bin'
+ICON_PATH    = "/usr/local/share/cmus-osx/"
 CMUS_SCRIPTS = ['cmus-osx.py', 'cmus-osx-keys.py', 'cmus-osx-notify.py']
 CURR_PATH    = os.path.dirname(os.path.abspath(__file__))
 
@@ -61,11 +62,11 @@ class Setup():
 
         #check for eyeD3
         try:
-            from tinytag import TinyTag
-            print("  verified: tinytag")
+            import mutagen
+            print("  verified: mutagen")
         except:
             print("info: if you want to see albmum art thumbnail in"
-                " notification center, please install `tinytag` v1.6+ by `pip` or see the"
+                " notification center, please install `mutagen` v1.36+ by `pip` or see the"
                 " README.md for more information.");
             pass
 
@@ -79,6 +80,11 @@ class Setup():
             print('  copy to: {}'.format(sf_path))
             shutil.copy(os.path.join('./bin', sf), self.install_path)
             os.chmod(sf_path, 0755)
+            if os.path.isdir("/usr/local/share/"):
+                if not os.path.isdir(ICON_PATH):
+                    os.mkdir(ICON_PATH)
+            shutil.copy("cmus-icon.png", ICON_PATH)
+            print('  copy to: {}'.format(ICON_PATH))
 
     def __remove_files(self):
         self.__read_installation_folder()
@@ -107,8 +113,7 @@ class Setup():
                 options = {
                         'install_path' : self.install_path,
                         'notify' : {
-                            'mode' : 2,
-                            'icon_path': '/tmp/cmus-osx-cover.jpg'
+                            'mode' : 2
                             }
                         }
                 with open(CMUS_OSX_CONFIG, "w") as jfile:
