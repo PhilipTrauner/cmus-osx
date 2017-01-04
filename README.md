@@ -65,10 +65,10 @@ $> pip install -U pyobjc
 ```
 more info on [installing `pyobjc`](http://pythonhosted.org/pyobjc/install.html)
 
-- *optionally* [`tinytag`](https://github.com/devsnd/tinytag) (v1.6+) for
+- *optionally* [`mutagen`](https://github.com/quodlibet/mutagen) (v1.36+) for
 displaying the **album art** of the current songs.
 ```bash
-$> pip install --user tinytag
+$> pip install --user mutagen
 ```
 
 ----
