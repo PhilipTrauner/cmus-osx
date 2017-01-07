@@ -93,7 +93,7 @@ if "artist" in status:
 	message += status["artist"]
 
 if "album" in status:
-	message += '– %s' % status["album"]
+	message += ' – %s' % status["album"]
 
 if "date" in status and status["date"].isnumeric():
 	message += " (%s)" % status["date"]
