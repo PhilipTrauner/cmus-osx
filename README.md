@@ -22,7 +22,7 @@ links media keys of a Mac to `cmus`:
 after cloning this repository, simply find `setup.py`:
 
 ```bash
-$> git clone https://github.com/PhilipTrauner/cmus-osx
+$> git clone https://github.com/azadkuh/cmus-osx.git
 $> cd cmus-osx
 
 # on cmus-osx directory
