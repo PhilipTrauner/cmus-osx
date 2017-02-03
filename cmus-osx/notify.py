@@ -5,17 +5,12 @@ from sys import argv
 status_raw = argv[1:]
 status = dict(zip(status_raw[0::2], status_raw[1::2]))
 
-# Quickly exit if paused to preserve some battery
-if "status" in status:
-	if status["status"] != "playing":
-		exit(0)
 
 from sys import excepthook
 from os.path import expanduser, isfile
-import json
 
 import logging
-LOG_FILENAME = '/tmp/notify.log'
+LOG_FILENAME = "/tmp/cmus-osx-notify.log"
 logging.basicConfig(filename=LOG_FILENAME)
 
 def exception_hook(exc_type, exc_value, exc_traceback):
@@ -24,35 +19,47 @@ def exception_hook(exc_type, exc_value, exc_traceback):
 
 excepthook = exception_hook
 
+from Meh import Config, Option, ExceptionInConfigError
+
+CONFIG_PATH = expanduser("~/.config/cmus/cmus-osx/cmus-osx.config")
+
+config = Config()
+config += Option("display_mode", 2, validator=lambda x: x in (0, 1, 2), 
+	comment="0: Disables notifications; "
+			"1: Keep old notifications around; "
+			"2: Clear old notifications")
+config += Option("app_icon", expanduser("~/.config/cmus/cmus-osx/cmus-icon.png"), 
+	validator=isfile, comment="Fallback icon if no album artwork is avaliable")
+config += Option("notification_on_pause", False, 
+	comment="Also display notification on pause")
+config += Option("itunes_style_notification", True, 
+	comment="Display album artwork as app icon instead of notification badge")
+
+try:
+    config = config.load(CONFIG_PATH)
+except (IOError, ExceptionInConfigError):
+    config.dump(CONFIG_PATH)
+    config = config.load(CONFIG_PATH)
+
+
+if config.display_mode == 0:
+	exit(0)
+
+# Quickly exit if paused to preserve some battery
+if "status" in status:
+	if not config.notification_on_pause:
+		if status["status"] != "playing":
+			exit(0)
+
+
 from AppKit import NSData, NSImage, NSBitmapImageRep, NSMakeSize
 from Foundation import NSUserNotificationCenter
 from Foundation import NSUserNotification
 from Quartz import CGImageGetWidth, CGImageGetHeight
 from mutagen import File
 
-DISPLAY_MODE = 2
-CONFIG_LOCATION = expanduser("~/.config/cmus/cmus-osx/config.json")
-config_exists = False
 
-def write_config(path):
-	open(CONFIG_LOCATION, "w+").write(json.dumps({"display_mode" : 2}))
-
-if isfile(CONFIG_LOCATION):
-	try:
-		config = json.loads(open(CONFIG_LOCATION, "r").read())
-		config_exists = True
-	except json.decoder.JSONDecodeError:
-		write_config(CONFIG_LOCATION)
-else:
-	write_config(CONFIG_LOCATION)
-
-if config_exists and "display_mode" in config:
-	if config["display_mode"] in (1, 2, 3):
-		DISPLAY_MODE = config["display_mode"]
-
-# NSImage because CmusArguments.cover should always be an NSImage
-DEFAULT_STREAM_ICON = '/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/GenericNetworkIcon.icns'
-APP_ICON_PATH = expanduser("~/.config/cmus/cmus-osx/cmus-icon.png")
+DEFAULT_STREAM_ICON = "/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/GenericNetworkIcon.icns"
 
 cover = None
 
@@ -78,8 +85,10 @@ elif "file" in status:
 		if len(covers) > 0:
 			cover = covers[0]
 
-
-title = "cmus"
+if config.notification_on_pause:
+	title = "cmus %s" % status["status"]
+else:
+	title = "cmus"
 subtitle = ""
 message = ""
 
@@ -113,14 +122,19 @@ if cover: # the song has an embedded cover image
 		CGImageGetHeight(image_rep))
 	image = NSImage.alloc().initWithSize_(size)
 	image.addRepresentation_(image_rep)
-	notification.setValue_forKey_(image, "_identityImage")
+	if config.itunes_style_notification:
+		notification.setValue_forKey_(image, "_identityImage")
+	else:
+		notification.setValue_forKey_(
+			NSImage.alloc().initByReferencingFile_(config.app_icon), "_identityImage")
+		notification.setContentImage_(image)
 else: # song has no cover image, show an icon
 	notification.setValue_forKey_(
-		NSImage.alloc().initByReferencingFile_(APP_ICON_PATH), "_identityImage")
+		NSImage.alloc().initByReferencingFile_(config.app_icon), "_identityImage")
 
-if DISPLAY_MODE == 1:
+if config.display_mode == 1:
 	notification.setIdentifier_('cmus')
-elif DISPLAY_MODE == 2:
+elif config.display_mode == 2:
 	center.removeAllDeliveredNotifications()
 
 center.deliverNotification_(notification)
