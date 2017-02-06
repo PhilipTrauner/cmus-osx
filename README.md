@@ -9,7 +9,7 @@
 ![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)
 
 **cmus-osx** tightly integrates *cmus* into macOS.   
-It adds notification and media key support on par with other media players like iTunes.
+It adds notification and media key support on par with other media players such as iTunes.
 
 
 > [vim-cmus](https://github.com/azadkuh/vim-cmus) is a sister project for `nvim`/`vim` integration of `cmus`.
