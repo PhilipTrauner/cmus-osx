@@ -1,7 +1,7 @@
 <img align="right" src="https://img.clipartfest.com/523c0e25466efdba98f0541e27c436a5_prohibition20clipart-warning-signs-clip-art_900-900.png" height="100" width="100">
 ​  
 <p>
-<strong>Broken as of 10.12.4</strong> > <a href="https://github.com/azadkuh/cmus-osx/issues/9">#9</a>
+<strong>Broken as of 10.12.4</strong> :arrow_right: <a href="https://github.com/thebitguru/play-button-itunes-patch">Workaround</a>
 </p>
 <p>
 ​
