@@ -38,9 +38,9 @@ def install():
 		pyobjc_installed = True
 	except ImportError:
 		print("pyobjc not installed. Run 'pip3 install pyobjc'.")
+	disable_itunes()
 	if pyobjc_installed:
 		call([NOTIFY_PATH, "title", "Install successful!"])
-	disable_itunes()
 	print("Installed. To enable notifications execute\n%s\nin cmus." % AUTOSAVE_ENTRY)
 
 
