@@ -40,11 +40,23 @@ def install():
 		print("pyobjc not installed. Run 'pip3 install pyobjc'.")
 	if pyobjc_installed:
 		call([NOTIFY_PATH, "title", "Install successful!"])
+	disable_itunes()
 	print("Installed. To enable notifications execute\n%s\nin cmus." % AUTOSAVE_ENTRY)
+
+
+def disable_itunes():
+	print("Disabling iTunes. Uninstall to re-enable!")
+	call("sudo chmod -R o-rwx /Applications/iTunes.app", shell=True)
+
+
+def enable_itunes():
+	print("Enabling iTunes.")
+	call("sudo chmod -R o+rwx /Applications/iTunes.app", shell=True)
 
 def uninstall():
 	if isdir(CMUS_BASE_DIR + FOLDER_NAME):
 		rmtree(CMUS_BASE_DIR + FOLDER_NAME)
+	enable_itunes()
 	if isfile(RC_PATH):
 		rc_content = open(RC_PATH, "r").read().split("\n")
 		if rc_content[-1] == "":
@@ -54,7 +66,8 @@ def uninstall():
 			if line != RC_ENTRY.rstrip("\n"):
 				rc.write(line + "\n")
 
-COMMANDS = {"install" : install, "uninstall" : uninstall}
+COMMANDS = {"install" : install, "uninstall" : uninstall, 
+	"enable_itunes" : enable_itunes, "disable_itunes" : disable_itunes}
 
 if argv[1] in COMMANDS:
 	COMMANDS[argv[1]]()
