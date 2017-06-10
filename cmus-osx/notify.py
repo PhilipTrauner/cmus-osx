@@ -58,30 +58,29 @@ from Foundation import NSUserNotification
 from Quartz import CGImageGetWidth, CGImageGetHeight
 from mutagen import File
 
-
-DEFAULT_STREAM_ICON = "/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/GenericNetworkIcon.icns"
-
 cover = None
 
 if "url" in status:
-	if status["url"].startswith(('http://', 'https://')):
-		cover = NSImage.alloc().initByReferencingFile_(DEFAULT_STREAM_ICON)
-		status['status'] = status['status'] + " (streaming ...)"
-		# the title may contain both the artist and the song name
+	status["status"] = "(streaming ...)"
+	# the title may contain both the artist and the song name
+	if "title" in status:
 		title_pair = status["title"].split(" - ")
-		if len(title_pair) > 0:
+		if len(title_pair) > 1:
 			status["artist"] = title_pair[0]
 			status["title"] = title_pair[1]
+	else:
+		status["title"] = status["url"]
+
 
 elif "file" in status:
 	file = File(status["file"])
 	# id3
-	if 'APIC:' in file:
-		cover = file['APIC:']
+	if "APIC:" in file:
+		cover = file["APIC:"]
 		cover = cover.data
 	# mp4
-	elif 'covr' in file:
-		covers = file['covr']
+	elif "covr" in file:
+		covers = file["covr"]
 		if len(covers) > 0:
 			cover = covers[0]
 
@@ -133,7 +132,7 @@ else: # song has no cover image, show an icon
 		NSImage.alloc().initByReferencingFile_(config.app_icon), "_identityImage")
 
 if config.display_mode == 1:
-	notification.setIdentifier_('cmus')
+	notification.setIdentifier_("cmus")
 elif config.display_mode == 2:
 	center.removeAllDeliveredNotifications()
 
