@@ -1,10 +1,3 @@
-<img align="right" src="https://img.clipartfest.com/523c0e25466efdba98f0541e27c436a5_prohibition20clipart-warning-signs-clip-art_900-900.png" height="100" width="100">
-​  
-<p>
-<strong>Broken as of 10.12.4</strong> :arrow_right: <a href="https://github.com/thebitguru/play-button-itunes-patch">Workaround 1</a>, <a href="https://github.com/herrbischoff/awesome-osx-command-line/issues/134#issuecomment-294185380">Workaround 2</a>
-</p>
-<p>
-​
 </p>
 <p align="center">
 	<img src="https://github.com/azadkuh/cmus-osx/blob/master/cmus-osx/cmus-icon.png?raw=true">
@@ -38,6 +31,10 @@ It adds notification and media key support on par with other media players such 
 </p>
 
 ### Installation
+**Attention!** Installing cmus-osx will prevent you from opening iTunes until it is uninstalled!  
+Since macOS 10.12 `launchctl` can not manipulate system services while System Integrity Protection is engaged.  
+Long story short: iTunes will always be launched when a media key is pressed unless it is explicitly disabled.
+
 ```bash
 git clone https://github.com/azadkuh/cmus-osx.git
 cd cmus-osx
