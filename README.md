@@ -12,10 +12,6 @@
 **cmus-osx** tightly integrates *cmus* into macOS.   
 It adds notification and media key support on par with other media players such as iTunes.
 
-
-> [vim-cmus](https://github.com/azadkuh/vim-cmus) is a sister project for `nvim`/`vim` integration of `cmus`.
-
-
 ### Features
 <p align="center">
 	<img src="https://cloud.githubusercontent.com/assets/6501462/14425436/7d69fd8c-fffc-11e5-93ac-3ee26ba6e299.png">
@@ -46,3 +42,7 @@ You can also uninstall **cmus-osx** if you really want to: `./setup.py uninstall
 
 ### Configuration
 A config file is created on first usage: `~/.config/cmus/cmus-osx/cmus-osx.config`
+
+### Credits
+* [azadkuh](https://github.com/azadkuh) (all versions up to and including v1.2.0)
+* [PhilipTrauner](https://github.com/PhilipTrauner) (all following versions)
