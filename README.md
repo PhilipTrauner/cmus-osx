@@ -1,6 +1,6 @@
 </p>
 <p align="center">
-	<img src="https://github.com/azadkuh/cmus-osx/blob/master/cmus-osx/cmus-icon.png?raw=true">
+	<img src="https://user-images.githubusercontent.com/9287847/27091843-a2df8f6c-5061-11e7-94cb-3312cca609c8.png" height="300">
 </p>
 <p align="center">
 	<strong>cmus-osx</strong>
@@ -44,5 +44,5 @@ You can also uninstall **cmus-osx** if you really want to: `./setup.py uninstall
 A config file is created on first usage: `~/.config/cmus/cmus-osx/cmus-osx.config`
 
 ### Credits
-* [azadkuh](https://github.com/azadkuh) (all versions up to and including v1.2.0)
-* [PhilipTrauner](https://github.com/PhilipTrauner) (all following versions)
+* [azadkuh](https://github.com/azadkuh): all versions up to and including v1.2.0
+* [PhilipTrauner](https://github.com/PhilipTrauner): all following versions
