@@ -46,3 +46,4 @@ A config file is created on first usage: `~/.config/cmus/cmus-osx/cmus-osx.confi
 ### Credits
 * [azadkuh](https://github.com/azadkuh): all versions up to and including v1.2.0
 * [PhilipTrauner](https://github.com/PhilipTrauner): all following versions
+* [Daniel Santos](https://qrc.to): QR code logo
