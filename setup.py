@@ -7,7 +7,18 @@ from subprocess import call
 
 FOLDER_NAME = "cmus-osx/"
 
-CMUS_BASE_DIR = expanduser("~/.config/cmus/")
+CMUS_BASE_DIR = None
+
+for cmus_base_dir in [expanduser("~/.config/cmus/"), expanduser("~/.cmus/")]:
+	if isdir(cmus_base_dir):
+		CMUS_BASE_DIR = cmus_base_dir
+
+if CMUS_BASE_DIR == None:
+	print("cmus config directory not found, aborting...")
+	exit(1)
+else:
+	print("cmus config directory: '%s'" % CMUS_BASE_DIR)
+
 
 RC_PATH = CMUS_BASE_DIR + "rc"
 MEDIA_KEYS_PATH = CMUS_BASE_DIR + FOLDER_NAME + "media-keys.py"
