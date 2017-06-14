@@ -32,7 +32,7 @@ Since macOS 10.12 `launchctl` can not manipulate system services while System In
 Long story short: iTunes will always be launched when a media key is pressed unless it is explicitly disabled.
 
 ```bash
-git clone https://github.com/azadkuh/cmus-osx.git
+git clone https://github.com/PhilipTrauner/cmus-osx.git
 cd cmus-osx
 pip3 install -r requirements.txt
 ./setup.py install
