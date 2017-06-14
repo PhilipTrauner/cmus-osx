@@ -5,7 +5,7 @@ from sys import argv
 status_raw = argv[1:]
 status = dict(zip(status_raw[0::2], status_raw[1::2]))
 
-
+from os.path import isdir
 from sys import excepthook
 from os.path import expanduser, isfile
 
@@ -21,7 +21,16 @@ excepthook = exception_hook
 
 from Meh import Config, Option, ExceptionInConfigError
 
-CONFIG_PATH = expanduser("~/.config/cmus/cmus-osx/cmus-osx.config")
+CONFIG_PATH = None
+
+for config_path in [expanduser("~/.config/cmus/cmus-osx/"), expanduser("~/.cmus/cmus-osx/")]:
+	if isdir(config_path):
+		CONFIG_PATH = config_path + "cmus-osx.config"
+
+
+if CONFIG_PATH == None:
+	raise Exception("cmus config directory not found, aborting...")
+
 
 config = Config()
 config += Option("display_mode", 2, validator=lambda x: x in (0, 1, 2), 
