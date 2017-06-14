@@ -80,5 +80,7 @@ def uninstall():
 COMMANDS = {"install" : install, "uninstall" : uninstall, 
 	"enable_itunes" : enable_itunes, "disable_itunes" : disable_itunes}
 
-if argv[1] in COMMANDS:
+if len(argv) != 2:
+	print("No action specified. (avaliable: %s)" % ", ".join(COMMANDS.keys()))
+elif argv[1] in COMMANDS:
 	COMMANDS[argv[1]]()
