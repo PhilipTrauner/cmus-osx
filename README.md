@@ -43,6 +43,14 @@ You can also uninstall **cmus-osx** if you really want to: `./setup.py uninstall
 ### Configuration
 A config file is created on first usage: `~/.config/cmus/cmus-osx/cmus-osx.config`
 
+### pyenv
+Framework building has to be enabled, otherwise notifications cannot be created.  
+Add this export to your shell-rc (`.bashrc`, `.zshrc`) and rebuild.
+```bash
+export PYTHON_CONFIGURE_OPTS="--enable-framework"
+```
+
+
 ### Credits
 * [azadkuh](https://github.com/azadkuh): all versions up to and including v1.2.0
 * [PhilipTrauner](https://github.com/PhilipTrauner): all following versions
