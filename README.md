@@ -1,33 +1,15 @@
-</p>
-<p align="center">
-	<img src="https://user-images.githubusercontent.com/9287847/27091843-a2df8f6c-5061-11e7-94cb-3312cca609c8.png" height="300">
-</p>
-<p align="center">
-	<strong>cmus-osx</strong>
-</p>
+<img align="right" src="https://user-images.githubusercontent.com/9287847/33808557-f03eef40-dde8-11e7-8951-68350df85a70.gif" width="350"/>
+
+<h1><kbd>▶</kbd> cmus-osx</h1>
 
 ![Python version support: 3](https://img.shields.io/badge/python-3-green.svg)
 ![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)
 
-**cmus-osx** tightly integrates *cmus* into macOS.   
+**cmus-osx** tightly integrates *cmus* into *macOS*.   
 It adds notification and media key support on par with other media players such as iTunes.
 
-### Features
-<p align="center">
-	<img src="https://cloud.githubusercontent.com/assets/6501462/14425436/7d69fd8c-fffc-11e5-93ac-3ee26ba6e299.png">
-</p>
-<p align="center">
-	<strong>Media Keys</strong>
-</p>
-<p align="center">
-	<img src="https://cloud.githubusercontent.com/assets/9287847/21743528/47fc9cb2-d504-11e6-915f-62b6dc9b487d.gif">
-</p>
-<p align="center">
-	<strong>Notifications</strong>
-</p>
-
 ### Installation
-**Attention!** Installing cmus-osx will prevent you from opening iTunes until it is uninstalled!  
+**Attention!** Installing **cmus-osx** will prevent you from opening iTunes until it is uninstalled!  
 Since macOS 10.12 `launchctl` can not manipulate system services while System Integrity Protection is engaged.  
 Long story short: iTunes will always be launched when a media key is pressed unless it is explicitly disabled.
 
@@ -38,20 +20,21 @@ pip3 install -r requirements.txt
 ./setup.py install
 ```
 
-You can also uninstall **cmus-osx** if you really want to: `./setup.py uninstall`
+Uninstall **cmus-osx**: `./setup.py uninstall`
 
-### Configuration
-A config file is created on first usage: `~/.config/cmus/cmus-osx/cmus-osx.config`
-
-### pyenv
+#### pyenv
 Framework building has to be enabled, otherwise notifications cannot be created.  
-Add this export to your shell-rc (`.bashrc`, `.zshrc`) and rebuild.
+Add this export to your shell-rc and rebuild.
 ```bash
 export PYTHON_CONFIGURE_OPTS="--enable-framework"
 ```
 
 
+
+### Configuration
+A config file is created on first usage: `~/.config/cmus/cmus-osx/cmus-osx.config`
+
 ### Credits
 * [azadkuh](https://github.com/azadkuh): all versions up to and including v1.2.0
 * [PhilipTrauner](https://github.com/PhilipTrauner): all following versions
-* [Daniel Santos](https://qrc.to): QR code logo
+* [Daniel Santos](https://qrc.to): QR code logo (previously used in README)
