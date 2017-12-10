@@ -63,7 +63,7 @@ def disable_itunes():
 
 def enable_itunes():
 	print("Enabling iTunes.")
-	call("sudo chmod -x /Applications/iTunes.app/Contents/MacOS/iTunes", shell=True)
+	call("sudo chmod +x /Applications/iTunes.app/Contents/MacOS/iTunes", shell=True)
 
 
 def uninstall():
