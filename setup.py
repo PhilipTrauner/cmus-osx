@@ -6,6 +6,7 @@ from sys import argv
 from subprocess import call
 
 FOLDER_NAME = "cmus-osx/"
+MISSING_DEP_HELP = "Consult the installation section in README."
 
 CMUS_BASE_DIR = None
 
@@ -39,7 +40,7 @@ def install():
 	try:
 		import mutagen
 	except ImportError:
-		print("mutagen not installed. Run 'pip3 install mutagen'.")
+		print("mutagen not installed. %s" % MISSING_DEP_HELP)
 	pyobjc_installed = False
 	try:
 		import AppKit
@@ -48,7 +49,7 @@ def install():
 		import PyObjCTools
 		pyobjc_installed = True
 	except ImportError:
-		print("pyobjc not installed. Run 'pip3 install pyobjc'.")
+		print("pyobjc not installed. %s" % MISSING_DEP_HELP)
 	disable_itunes()
 	if pyobjc_installed:
 		call([NOTIFY_PATH, "title", "Install successful!"])
@@ -57,12 +58,13 @@ def install():
 
 def disable_itunes():
 	print("Disabling iTunes. Uninstall to re-enable!")
-	call("sudo chmod -R o-rwx /Applications/iTunes.app", shell=True)
+	call("sudo chmod -x /Applications/iTunes.app/Contents/MacOS/iTunes", shell=True)
 
 
 def enable_itunes():
 	print("Enabling iTunes.")
-	call("sudo chmod -R o+rwx /Applications/iTunes.app", shell=True)
+	call("sudo chmod -x /Applications/iTunes.app/Contents/MacOS/iTunes", shell=True)
+
 
 def uninstall():
 	if isdir(CMUS_BASE_DIR + FOLDER_NAME):
