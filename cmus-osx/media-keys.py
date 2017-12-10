@@ -2,12 +2,14 @@
 
 from subprocess import check_output, call, CalledProcessError
 from time import sleep
+from threading import Thread
+from os import _exit as exit
+
 from AppKit import NSAlert, NSInformationalAlertStyle, NSApp, NSApplication
 from AppKit import NSApplicationActivationPolicyProhibited, NSSystemDefined
 from AppKit import NSKeyUp
 from PyObjCTools import AppHelper
-from threading import Thread
-from os import _exit as exit
+
 
 class KeySocketApp(NSApplication):
 	repeated = False
@@ -39,6 +41,7 @@ class KeySocketApp(NSApplication):
 		elif key_code == 19 or key_code == 17:
 			call(['cmus-remote', '-n'])
 
+
 class SingleInstanceChecker(Thread):
 	def __init__(self):
 		Thread.__init__(self)
@@ -50,11 +53,11 @@ class SingleInstanceChecker(Thread):
 		while self.running:
 			cmus_instances = get_cmus_instances()
 			if len(cmus_instances) == 0:
-				quit()
-			if len(cmus_instances) > 1:
+				exit(0)
+			elif len(cmus_instances) > 1:
 				call(["cmus-remote", "--raw", "echo Media key support disabled "
 					"because more than one cmus instance is running."])
-				quit(code=1)
+				exit(1)
 			sleep(1)
 
 	def stop(self):
@@ -69,23 +72,13 @@ def get_cmus_instances():
 		pass
 	return pids
 
-def quit(code=0):
-	call(['launchctl', 'load', '-w', 
-		'/System/Library/LaunchAgents/com.apple.rcd.plist'])
-	exit(code)
-
-
 cmus_instances = get_cmus_instances()
 
 if len(cmus_instances) == 1:
-	call(['launchctl', 'unload', '-w', 
-		'/System/Library/LaunchAgents/com.apple.rcd.plist'])
 	app = KeySocketApp.sharedApplication()
 	app.setActivationPolicy_(NSApplicationActivationPolicyProhibited)
 	single_instance_checker = SingleInstanceChecker()
 	single_instance_checker.start()
 	AppHelper.runEventLoop()
 else:
-	quit(1)
-
-
+	exit(1)
