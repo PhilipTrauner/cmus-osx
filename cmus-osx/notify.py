@@ -1,25 +1,26 @@
 #!/usr/bin/env python3
 
-from sys import argv
+import sys
 
-status_raw = argv[1:]
+status_raw = sys.argv[1:]
 status = dict(zip(status_raw[0::2], status_raw[1::2]))
 
 from os.path import isdir
-from sys import excepthook
 from os.path import expanduser, isfile
+
+from logging import basicConfig, error
 
 import logging
 LOG_FILENAME = "/tmp/cmus-osx-notify.log"
-logging.basicConfig(filename=LOG_FILENAME)
+basicConfig(filename=LOG_FILENAME)
 
 def exception_hook(exc_type, exc_value, exc_traceback):
-	logging.error("Uncaught exception", 
+	error("Uncaught exception", 
 		exc_info=(exc_type, exc_value, exc_traceback))
 
-excepthook = exception_hook
+sys.excepthook = exception_hook
 
-from Meh import Config, Option, ExceptionInConfigError
+from meh import Config, Option, ExceptionInConfigError
 
 CONFIG_PATH = None
 
@@ -54,7 +55,7 @@ except (IOError, ExceptionInConfigError):
 if config.display_mode == 0:
 	exit(0)
 
-# Quickly exit if paused to preserve some battery
+# Quickly exit if paused
 if "status" in status:
 	if not config.notification_on_pause:
 		if status["status"] != "playing":
