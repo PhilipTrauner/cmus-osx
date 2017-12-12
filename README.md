@@ -4,6 +4,7 @@
 
 ![Python version support: 3](https://img.shields.io/badge/python-3-green.svg)
 ![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)
+![Build status](https://travis-ci.org/PhilipTrauner/cmus-osx.svg?branch=master)
 
 **cmus-osx** tightly integrates [*cmus*](https://cmus.github.io/), an excellent console music player, into *macOS*.   
 It adds notification and media key support on par with other media players such as iTunes.
