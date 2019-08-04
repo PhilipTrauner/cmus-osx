@@ -6,13 +6,12 @@
 ![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)
 [![](https://travis-ci.org/PhilipTrauner/cmus-osx.svg?branch=master)](https://travis-ci.org/PhilipTrauner/cmus-osx)
 
-**cmus-osx** tightly integrates [*cmus*](https://cmus.github.io/), an excellent console music player, into *macOS*.   
+**cmus-osx** tightly integrates [*cmus*](https://cmus.github.io/) into *macOS*.  
 It adds notification and media key support on par with other media players such as iTunes.
 
 ### Installation
-**Attention!** Installing **cmus-osx** will prevent you from opening iTunes until it is uninstalled!  
-Since macOS 10.12 `launchctl` can not manipulate system services while System Integrity Protection is engaged.  
-Long story short: iTunes will always be launched when a media key is pressed unless it is explicitly disabled.
+macOS automatically launches iTunes once a media key is pressed.  
+Installing [noTunes](https://github.com/tombonez/noTunes) is the recommended solution to prevent this from happening.
 
 ```bash
 git clone https://github.com/PhilipTrauner/cmus-osx.git
