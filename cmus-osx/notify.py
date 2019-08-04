@@ -104,11 +104,14 @@ elif "file" in status and isfile(status["file"]):
     if "APIC:" in file:
         cover = file["APIC:"]
         cover = cover.data
-        # mp4
+    # mp4
     elif "covr" in file:
         covers = file["covr"]
         if len(covers) > 0:
             cover = covers[0]
+    # flac
+    elif file.pictures:
+        cover = file.pictures[0].data
 
 if config.notification_on_pause:
     title = "cmus %s" % status["status"]
