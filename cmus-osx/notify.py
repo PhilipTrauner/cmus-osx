@@ -7,6 +7,7 @@ status = dict(zip(status_raw[0::2], status_raw[1::2]))
 from os.path import isdir
 from os.path import expanduser
 from os.path import isfile
+from os.path import dirname
 
 from logging import basicConfig
 from logging import error
@@ -24,6 +25,7 @@ sys.excepthook = exception_hook
 from meh import Config
 from meh import Option
 from meh import ExceptionInConfigError
+from os import path
 
 CONFIG_PATH = None
 
@@ -48,9 +50,10 @@ config += Option(
     "1: Keep old notifications around; "
     "2: Clear old notifications",
 )
+
 config += Option(
     "app_icon",
-    expanduser("~/.config/cmus/cmus-osx/cmus-icon.png"),
+    dirname(CONFIG_PATH) + "/cmus-icon.png",
     validator=isfile,
     comment="Fallback icon if no album artwork is avaliable",
 )
@@ -68,7 +71,6 @@ try:
 except (IOError, ExceptionInConfigError):
     config.dump(CONFIG_PATH)
     config = config.load(CONFIG_PATH)
-
 
 if config.display_mode == 0:
     exit(0)
