@@ -1,0 +1,25 @@
+repos:
+-   repo: https://github.com/ambv/black
+    rev: 18.9b0
+    hooks:
+    - id: black
+-   repo: https://github.com/asottile/blacken-docs
+    rev: v0.3.0
+    hooks:
+    -   id: blacken-docs
+        additional_dependencies: [black==18.9b0]
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v2.1.0
+    hooks:
+    -   id: trailing-whitespace
+        args: [--markdown-linebreak-ext=md]
+    -   id: check-ast
+    -   id: check-added-large-files
+-   repo: https://github.com/asottile/reorder_python_imports
+    rev: v1.3.4
+    hooks:
+    -   id: reorder-python-imports
+-   repo: https://gitlab.com/pycqa/flake8
+    rev: '3.7.6'
+    hooks:
+    -   id: flake8
