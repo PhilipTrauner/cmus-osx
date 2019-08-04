@@ -25,7 +25,6 @@ sys.excepthook = exception_hook
 from meh import Config
 from meh import Option
 from meh import ExceptionInConfigError
-from os import path
 
 CONFIG_PATH = None
 
@@ -50,11 +49,9 @@ config += Option(
     "1: Keep old notifications around; "
     "2: Clear old notifications",
 )
-
 config += Option(
     "app_icon",
     dirname(CONFIG_PATH) + "/cmus-icon.png",
-    validator=isfile,
     comment="Fallback icon if no album artwork is avaliable",
 )
 config += Option(
@@ -74,6 +71,12 @@ except (IOError, ExceptionInConfigError):
 
 if config.display_mode == 0:
     exit(0)
+
+if config.app_icon:
+    # expand the path in memory to avoid writing absolute paths to config file
+    config._values["app_icon"] = expanduser(config.app_icon)
+    if not isfile(config._values["app_icon"]):
+        raise FileNotFoundError("invalid value for option 'app_icon'")
 
 # Quickly exit if paused
 if "status" in status:
