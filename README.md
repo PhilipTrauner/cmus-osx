@@ -13,7 +13,7 @@ It adds notification and media key support on par with other media players such 
 macOS automatically launches iTunes once a media key is pressed.
 Installing [noTunes](https://github.com/tombonez/noTunes) is the recommended solution to prevent this from happening.
 
-Requires [PIP](https://pip.pypa.io/en/stable/installing/).
+Requires [PIP](https://pip.pypa.io/en/stable/installing/) installed.
 
 ```bash
 git clone https://github.com/PhilipTrauner/cmus-osx.git
@@ -32,6 +32,13 @@ export PYTHON_CONFIGURE_OPTS="--enable-framework"
 
 ### Configuration
 A config file is created on first usage: `~/.config/cmus/cmus-osx/cmus-osx.config`
+
+### Upgrade
+
+```bash
+cd `~/.cmus/cmus-osx` (or where you have it installed)
+./setup.py upgrade
+```
 
 ### Credits
 * [azadkuh](https://github.com/azadkuh): all versions up to and including v1.2.0
