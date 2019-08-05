@@ -128,6 +128,8 @@ if "title" in status:
 
 if "artist" in status:
     message += status["artist"]
+elif "albumartist" in status:
+    message += status["albumartist"]
 
 if "album" in status:
     message += " – %s" % status["album"]
