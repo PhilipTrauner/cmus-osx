@@ -6,9 +6,17 @@ from shutil import copytree
 from shutil import rmtree
 from subprocess import call
 from sys import argv
+from sys import executable
+from subprocess import check_output
+from os import environ
 
 FOLDER_NAME = "cmus-osx/"
 MISSING_DEP_HELP = "Consult the installation section in README."
+
+if environ.get('ENV') is None:
+    REQUIREMENTS_FILE = "requirements.txt"
+elif environ.get('ENV') == "dev":
+    REQUIREMENTS_FILE = "requirements-dev.txt"
 
 CMUS_BASE_DIR = None
 
@@ -29,8 +37,19 @@ RC_ENTRY = "shell %s &\n" % MEDIA_KEYS_PATH
 NOTIFY_PATH = CMUS_BASE_DIR + FOLDER_NAME + "notify.py"
 AUTOSAVE_ENTRY = "set status_display_program=%s" % NOTIFY_PATH
 
+def process_reqs(action):
+    if action == "install":
+        print("Installing requirements...")
+
+        call([executable, '-m', 'pip', 'install', '-r', REQUIREMENTS_FILE])
+    elif action == "uninstall":
+        print("Uninstalling requirements...")
+        call([executable, '-m', 'pip', 'uninstall', '-r', REQUIREMENTS_FILE])
+
 
 def install():
+    process_reqs(argv[1])
+
     if isdir(CMUS_BASE_DIR):
         if isdir(CMUS_BASE_DIR + FOLDER_NAME):
             rmtree(CMUS_BASE_DIR + FOLDER_NAME)
@@ -40,10 +59,12 @@ def install():
             open(RC_PATH, "a").write(RC_ENTRY)
     else:
         open(RC_PATH, "w+").write(RC_ENTRY)
+
     try:
         import mutagen  # noqa: F401
     except ImportError:
         print("mutagen not installed. %s" % MISSING_DEP_HELP)
+
     pyobjc_installed = False
     try:
         import AppKit  # noqa: F401
@@ -56,10 +77,13 @@ def install():
         print("pyobjc not installed. %s" % MISSING_DEP_HELP)
     if pyobjc_installed:
         call([NOTIFY_PATH, "title", "Install successful!"])
-    print("Installed. To enable notifications execute\n%s\nin cmus." % AUTOSAVE_ENTRY)
+
+    print("\nInstalled. To enable notifications execute:\n%s\nin cmus." % AUTOSAVE_ENTRY)
 
 
 def uninstall():
+    process_reqs(argv[1])
+
     if isdir(CMUS_BASE_DIR + FOLDER_NAME):
         rmtree(CMUS_BASE_DIR + FOLDER_NAME)
     if isfile(RC_PATH):

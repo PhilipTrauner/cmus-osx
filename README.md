@@ -6,30 +6,29 @@
 ![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)
 [![](https://travis-ci.org/PhilipTrauner/cmus-osx.svg?branch=master)](https://travis-ci.org/PhilipTrauner/cmus-osx)
 
-**cmus-osx** tightly integrates [*cmus*](https://cmus.github.io/) into *macOS*.  
+**cmus-osx** tightly integrates [*cmus*](https://cmus.github.io/) into *macOS*.
 It adds notification and media key support on par with other media players such as iTunes.
 
 ### Installation
-macOS automatically launches iTunes once a media key is pressed.  
+macOS automatically launches iTunes once a media key is pressed.
 Installing [noTunes](https://github.com/tombonez/noTunes) is the recommended solution to prevent this from happening.
+
+Requires [PIP](https://pip.pypa.io/en/stable/installing/).
 
 ```bash
 git clone https://github.com/PhilipTrauner/cmus-osx.git
 cd cmus-osx
-pip3 install -r requirements.txt
 ./setup.py install
 ```
 
 Uninstall **cmus-osx**: `./setup.py uninstall`
 
 #### pyenv
-Framework building has to be enabled, otherwise notifications cannot be created.  
+Framework building has to be enabled, otherwise notifications cannot be created.
 Add this export to your shell-rc and rebuild.
 ```bash
 export PYTHON_CONFIGURE_OPTS="--enable-framework"
 ```
-
-
 
 ### Configuration
 A config file is created on first usage: `~/.config/cmus/cmus-osx/cmus-osx.config`
