@@ -18,6 +18,10 @@ basicConfig(filename=LOG_FILENAME)
 def exception_hook(exc_type, exc_value, exc_traceback):
     error("Uncaught exception", exc_info=(exc_type, exc_value, exc_traceback))
 
+    from subprocess import call
+
+    call(["cmus-remote", "--raw", "echo cmus-osx error: %s" % str(exc_value)])
+
 
 sys.excepthook = exception_hook
 
