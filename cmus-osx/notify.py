@@ -30,13 +30,15 @@ from meh import Option
 from meh import ExceptionInConfigError
 
 CONFIG_PATH = None
+BASE_DIRECTORY = None
 
-for config_path in [
+for base_diretory in [
     expanduser("~/.config/cmus/cmus-osx/"),
     expanduser("~/.cmus/cmus-osx/"),
 ]:
-    if isdir(config_path):
-        CONFIG_PATH = config_path + "cmus-osx.config"
+    if isdir(base_diretory):
+        CONFIG_PATH = base_diretory + "cmus-osx.config"
+        BASE_DIRECTORY = base_diretory
 
 
 if CONFIG_PATH is None:
@@ -54,8 +56,8 @@ config += Option(
 )
 config += Option(
     "app_icon",
-    expanduser("~/.config/cmus/cmus-osx/cmus-icon.png"),
-    validator=isfile,
+    "%scmus-icon.png" % BASE_DIRECTORY,
+    validator=lambda path: isfile(expanduser(path)),
     comment="Fallback icon if no album artwork is avaliable",
 )
 config += Option(
@@ -76,6 +78,8 @@ except (IOError, ExceptionInConfigError):
 
 if config.display_mode == 0:
     exit(0)
+
+app_icon = expanduser(config.app_icon)
 
 # Quickly exit if paused
 if "status" in status:
@@ -159,12 +163,12 @@ if cover:  # the song has an embedded cover image
         notification.setValue_forKey_(image, "_identityImage")
     else:
         notification.setValue_forKey_(
-            NSImage.alloc().initByReferencingFile_(config.app_icon), "_identityImage"
+            NSImage.alloc().initByReferencingFile_(app_icon), "_identityImage"
         )
         notification.setContentImage_(image)
 else:  # song has no cover image, show an icon
     notification.setValue_forKey_(
-        NSImage.alloc().initByReferencingFile_(config.app_icon), "_identityImage"
+        NSImage.alloc().initByReferencingFile_(app_icon), "_identityImage"
     )
 
 if config.display_mode == 1:
