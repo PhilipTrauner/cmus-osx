@@ -1,98 +1,48 @@
-#!/usr/bin/env python3
 import sys
-
-status_raw = sys.argv[1:]
-status = dict(zip(status_raw[0::2], status_raw[1::2]))
-
-from os.path import isdir
-from os.path import expanduser
 from os.path import isfile
+from subprocess import call
 
-from logging import basicConfig
-from logging import error
+from AppKit import NSBitmapImageRep
+from AppKit import NSData
+from AppKit import NSImage
+from AppKit import NSMakeSize
+from Foundation import NSUserNotification
+from Foundation import NSUserNotificationCenter
+from mutagen import File
+from Quartz import CGImageGetHeight
+from Quartz import CGImageGetWidth
 
-LOG_FILENAME = "/tmp/cmus-osx-notify.log"
-basicConfig(filename=LOG_FILENAME)
+from cmus_osx.constants import CMUS_OSX_FOLDER_NAME
+from cmus_osx.constants import CONFIG_NAME
+from cmus_osx.constants import ENV
+from cmus_osx.constants import ENV_VAR_PREFIX
+from cmus_osx.env import build_env
+from cmus_osx.util import locate_cmus_base_path
+from cmus_osx.util import source_env_file
 
 
 def exception_hook(exc_type, exc_value, exc_traceback):
-    error("Uncaught exception", exc_info=(exc_type, exc_value, exc_traceback))
-
-    from subprocess import call
-
     call(["cmus-remote", "--raw", "echo cmus-osx error: %s" % str(exc_value)])
 
 
 sys.excepthook = exception_hook
 
-from meh import Config
-from meh import Option
-from meh import ExceptionInConfigError
+cmus_base_path = locate_cmus_base_path()
 
-CONFIG_PATH = None
-BASE_DIRECTORY = None
+if cmus_base_path is not None:
+    source_env_file(cmus_base_path / CMUS_OSX_FOLDER_NAME / CONFIG_NAME)
 
-for base_diretory in [
-    expanduser("~/.config/cmus/cmus-osx/"),
-    expanduser("~/.cmus/cmus-osx/"),
-]:
-    if isdir(base_diretory):
-        CONFIG_PATH = base_diretory + "cmus-osx.config"
-        BASE_DIRECTORY = base_diretory
+# Use defaults values if config file can't be located
+env = build_env(ENV_VAR_PREFIX, ENV)
 
-
-if CONFIG_PATH is None:
-    raise Exception("cmus config directory not found, aborting...")
-
-
-config = Config()
-config += Option(
-    "display_mode",
-    2,
-    validator=lambda x: x in (0, 1, 2),
-    comment="0: Disables notifications; "
-    "1: Keep old notifications around; "
-    "2: Clear old notifications",
-)
-config += Option(
-    "app_icon",
-    "%scmus-icon.png" % BASE_DIRECTORY,
-    validator=lambda path: isfile(expanduser(path)),
-    comment="Fallback icon if no album artwork is avaliable",
-)
-config += Option(
-    "notification_on_pause", False, comment="Also display notification on pause"
-)
-config += Option(
-    "itunes_style_notification",
-    True,
-    comment="Display album artwork as app icon instead of notification badge",
-)
-
-try:
-    config = config.load(CONFIG_PATH)
-except (IOError, ExceptionInConfigError):
-    config.dump(CONFIG_PATH)
-    config = config.load(CONFIG_PATH)
-
-
-if config.display_mode == 0:
-    exit(0)
-
-app_icon = expanduser(config.app_icon)
+status_raw = sys.argv[1:]
+status = dict(zip(status_raw[0::2], status_raw[1::2]))
 
 # Quickly exit if paused
 if "status" in status:
-    if not config.notification_on_pause:
+    if not env.notification_on_pause:
         if status["status"] != "playing":
             exit(0)
-
-
-from AppKit import NSData, NSImage, NSBitmapImageRep, NSMakeSize
-from Foundation import NSUserNotificationCenter
-from Foundation import NSUserNotification
-from Quartz import CGImageGetWidth, CGImageGetHeight
-from mutagen import File
 
 cover = None
 
@@ -121,7 +71,7 @@ elif "file" in status and isfile(status["file"]):
     elif file.pictures:
         cover = file.pictures[0].data
 
-if config.notification_on_pause:
+if env.notification_on_pause:
     title = "cmus %s" % status["status"]
 else:
     title = "cmus"
@@ -159,21 +109,18 @@ if cover:  # the song has an embedded cover image
     size = NSMakeSize(CGImageGetWidth(image_rep), CGImageGetHeight(image_rep))
     image = NSImage.alloc().initWithSize_(size)
     image.addRepresentation_(image_rep)
-    if config.itunes_style_notification:
+    if env.itunes_style_notification:
         notification.setValue_forKey_(image, "_identityImage")
     else:
         notification.setValue_forKey_(
-            NSImage.alloc().initByReferencingFile_(app_icon), "_identityImage"
+            NSImage.alloc().initByReferencingFile_(str(env.app_icon)), "_identityImage"
         )
         notification.setContentImage_(image)
 else:  # song has no cover image, show an icon
     notification.setValue_forKey_(
-        NSImage.alloc().initByReferencingFile_(app_icon), "_identityImage"
+        NSImage.alloc().initByReferencingFile_(str(env.app_icon)), "_identityImage"
     )
 
-if config.display_mode == 1:
-    notification.setIdentifier_("cmus")
-elif config.display_mode == 2:
-    center.removeAllDeliveredNotifications()
+center.removeAllDeliveredNotifications()
 
 center.deliverNotification_(notification)
