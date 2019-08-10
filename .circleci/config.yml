@@ -18,7 +18,7 @@ jobs:
             mkdir -p /home/circleci/.config/pypoetry/
             echo "[repositories]" > /home/circleci/.config/pypoetry/config.toml
             poetry config settings.virtualenvs.create false
-            poetry install
+            poetry build
             pre-commit install-hooks
       - run:
           name: Lint
