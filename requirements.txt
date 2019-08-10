@@ -1,3 +1,0 @@
-Meh==1.2.1
-mutagen==1.42.0
-pyobjc==5.2
