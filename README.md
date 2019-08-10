@@ -1,40 +1,43 @@
 <img align="right" src="https://user-images.githubusercontent.com/9287847/33808557-f03eef40-dde8-11e7-8951-68350df85a70.gif" width="350"/>
 
+<p>​</p>
+
 <h1><kbd>▶</kbd> cmus-osx</h1>
 
 ![Python version support: 3](https://img.shields.io/badge/python-3-green.svg)
 ![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)
-[![](https://travis-ci.org/PhilipTrauner/cmus-osx.svg?branch=master)](https://travis-ci.org/PhilipTrauner/cmus-osx)
+[![CircleCI](https://circleci.com/gh/PhilipTrauner/cmus-osx.svg?style=svg)](https://circleci.com/gh/PhilipTrauner/cmus-osx)
 
-**cmus-osx** tightly integrates [*cmus*](https://cmus.github.io/) into *macOS*.  
-It adds notification and media key support on par with other media players such as iTunes.
+**cmus-osx** adds track change notifications, and media key support to [*cmus*](https://cmus.github.io/) (*macOS* only).
 
-### Installation
-macOS automatically launches iTunes once a media key is pressed.  
+## Installation
+macOS automatically launches iTunes on media key presses.
 Installing [noTunes](https://github.com/tombonez/noTunes) is the recommended solution to prevent this from happening.
 
 ```bash
-git clone https://github.com/PhilipTrauner/cmus-osx.git
-cd cmus-osx
-pip3 install -r requirements.txt
-./setup.py install
+pip3 install cmus-osx
+cmus-osx install
 ```
 
-Uninstall **cmus-osx**: `./setup.py uninstall`
+**cmus-osx** supports virtual environments natively, so installing it via `pipx` (or basically any other virtual environment manager) works just as well.
+
+### Uninstall
+```
+cmus-osx uninstall
+pip3 uninstall cmus-osx
+```
 
 #### pyenv
-Framework building has to be enabled, otherwise notifications cannot be created.  
-Add this export to your shell-rc and rebuild.
+Framework building has to be enabled, otherwise notifications cannot be created.
 ```bash
 export PYTHON_CONFIGURE_OPTS="--enable-framework"
 ```
 
-
-
-### Configuration
-A config file is created on first usage: `~/.config/cmus/cmus-osx/cmus-osx.config`
+## Configuration
+```
+cmus-osx config
+```
 
 ### Credits
 * [azadkuh](https://github.com/azadkuh): all versions up to and including v1.2.0
 * [PhilipTrauner](https://github.com/PhilipTrauner): all following versions
-* [Daniel Santos](https://qrc.to): QR code logo (previously used in README)
