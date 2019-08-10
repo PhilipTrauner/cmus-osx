@@ -15,6 +15,7 @@ jobs:
           name: Setup
           command: |
             sudo pip install poetry==${POETRY_VERSION}
+            sudo pip install pre-commit
             mkdir -p /home/circleci/.config/pypoetry/
             echo "[repositories]" > /home/circleci/.config/pypoetry/config.toml
             poetry config settings.virtualenvs.create false
