@@ -4,8 +4,9 @@
 
 <h1><kbd>▶</kbd> cmus-osx</h1>
 
-![Python version support: 3](https://img.shields.io/badge/python-3-green.svg)
-![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)
+![Python version support: 3.7](https://img.shields.io/badge/python-3.7-limegreen.svg)
+[![PyPI version](https://badge.fury.io/py/cmus-osx.svg)](https://badge.fury.io/py/cmus-osx)
+![License: MIT](https://img.shields.io/badge/license-MIT-limegreen.svg)
 [![CircleCI](https://circleci.com/gh/PhilipTrauner/cmus-osx.svg?style=svg)](https://circleci.com/gh/PhilipTrauner/cmus-osx)
 
 **cmus-osx** adds track change notifications, and media key support to [*cmus*](https://cmus.github.io/) (*macOS* only).
