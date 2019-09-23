@@ -103,7 +103,7 @@ notification.setTitle_(title)
 notification.setSubtitle_(subtitle)
 notification.setInformativeText_(message)
 
-if cover:  # the song has an embedded cover image
+if cover is not None:  # the song has an embedded cover image
     data = NSData.alloc().initWithBytes_length_(cover, len(cover))
     image_rep = NSBitmapImageRep.alloc().initWithData_(data)
 
