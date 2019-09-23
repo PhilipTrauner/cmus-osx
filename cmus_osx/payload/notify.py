@@ -68,7 +68,7 @@ elif "file" in status and isfile(status["file"]):
         if len(covers) > 0:
             cover = covers[0]
     # flac
-    elif file.pictures:
+    elif hasattr(file, "pictures") and len(file.pictures) > 0:
         cover = file.pictures[0].data
 
 if env.notification_on_pause:
