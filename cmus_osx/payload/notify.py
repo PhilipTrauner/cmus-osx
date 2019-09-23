@@ -1,4 +1,5 @@
 import sys
+from io import BytesIO
 from os.path import isfile
 from subprocess import call
 
@@ -9,8 +10,7 @@ from AppKit import NSMakeSize
 from Foundation import NSUserNotification
 from Foundation import NSUserNotificationCenter
 from mutagen import File
-from Quartz import CGImageGetHeight
-from Quartz import CGImageGetWidth
+from PIL import Image
 
 from cmus_osx.constants import CMUS_OSX_FOLDER_NAME
 from cmus_osx.constants import CONFIG_NAME
@@ -106,7 +106,11 @@ notification.setInformativeText_(message)
 if cover:  # the song has an embedded cover image
     data = NSData.alloc().initWithBytes_length_(cover, len(cover))
     image_rep = NSBitmapImageRep.alloc().initWithData_(data)
-    size = NSMakeSize(CGImageGetWidth(image_rep), CGImageGetHeight(image_rep))
+
+    # CGImageGetWidth started returning bogus values in macOS 10.14 ->
+    # Use Pillow to extract the image dimensions
+    size = NSMakeSize(*Image.open(BytesIO(cover)).size)
+
     image = NSImage.alloc().initWithSize_(size)
     image.addRepresentation_(image_rep)
     if env.itunes_style_notification:
