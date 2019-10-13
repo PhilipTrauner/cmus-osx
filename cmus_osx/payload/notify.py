@@ -1,6 +1,7 @@
 import sys
 from io import BytesIO
 from os.path import isfile
+from platform import mac_ver
 from subprocess import call
 
 from AppKit import NSBitmapImageRep
@@ -103,27 +104,31 @@ notification.setTitle_(title)
 notification.setSubtitle_(subtitle)
 notification.setInformativeText_(message)
 
-if cover is not None:  # the song has an embedded cover image
-    data = NSData.alloc().initWithBytes_length_(cover, len(cover))
-    image_rep = NSBitmapImageRep.alloc().initWithData_(data)
+# To-Do: Data allocation currently doesn't work in Catalina
+if mac_ver()[0] != "10.15":
+    if cover is not None:  # the song has an embedded cover image
+        data = NSData.alloc().initWithBytes_length_(cover, len(cover))
+        image_rep = NSBitmapImageRep.alloc().initWithData_(data)
 
-    # CGImageGetWidth started returning bogus values in macOS 10.14 ->
-    # Use Pillow to extract the image dimensions
-    size = NSMakeSize(*Image.open(BytesIO(cover)).size)
+        # CGImageGetWidth started returning bogus values in macOS 10.14 ->
+        # Use Pillow to extract the image dimensions
+        size = NSMakeSize(*Image.open(BytesIO(cover)).size)
 
-    image = NSImage.alloc().initWithSize_(size)
-    image.addRepresentation_(image_rep)
-    if env.itunes_style_notification:
-        notification.setValue_forKey_(image, "_identityImage")
-    else:
+        image = NSImage.alloc().initWithSize_(size)
+        image.addRepresentation_(image_rep)
+        if env.itunes_style_notification:
+
+            notification.setValue_forKey_(image, "_identityImage")
+        else:
+            notification.setValue_forKey_(
+                NSImage.alloc().initByReferencingFile_(str(env.app_icon)),
+                "_identityImage",
+            )
+            notification.setContentImage_(image)
+    else:  # song has no cover image, show an icon
         notification.setValue_forKey_(
             NSImage.alloc().initByReferencingFile_(str(env.app_icon)), "_identityImage"
         )
-        notification.setContentImage_(image)
-else:  # song has no cover image, show an icon
-    notification.setValue_forKey_(
-        NSImage.alloc().initByReferencingFile_(str(env.app_icon)), "_identityImage"
-    )
 
 center.removeAllDeliveredNotifications()
 
