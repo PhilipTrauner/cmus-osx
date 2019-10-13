@@ -13,7 +13,7 @@
 
 ## Installation
 macOS automatically launches iTunes on media key presses.
-Installing [noTunes](https://github.com/tombonez/noTunes) is the recommended solution to prevent this from happening.
+Installing [noTunes](https://github.com/tombonez/noTunes/releases/tag/v2.0) is the recommended solution to prevent this from happening.
 
 ```bash
 pip3 install cmus-osx
