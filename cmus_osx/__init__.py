@@ -44,7 +44,7 @@ class CmusConfig:
         base_path = locate_cmus_base_path()
         if base_path is not None:
             return CmusConfig._CmusConfig(
-                base_path, base_path / "rc", base_path / "autosave"
+                base_path, base_path.expanduser() / "rc", base_path.expanduser() / "autosave"
             )
         else:
             return None
@@ -59,11 +59,10 @@ def entrypoint(ctx):
     cmus_config = CmusConfig()
 
     if cmus_config is not None:
-        cmus_osx_base_path = cmus_config.base_path / CMUS_OSX_FOLDER_NAME
+        cmus_osx_base_path = cmus_config.base_path.expanduser() / CMUS_OSX_FOLDER_NAME
         cmus_osx_base_path.mkdir(exist_ok=True)
 
         config_path = cmus_osx_base_path / CONFIG_NAME
-
         if not config_path.is_file():
             with open(config_path, "w") as f:
                 f.write(template(ENV_VAR_PREFIX, ENV))
@@ -78,8 +77,10 @@ def entrypoint(ctx):
             )
             exit(AUTOSAVE_MISSING)
 
-        locals_ = locals()
+        rc_script_path = cmus_config.base_path / CMUS_OSX_FOLDER_NAME / RC_SCRIPT_NAME
+        sdp_script_path = cmus_config.base_path / CMUS_OSX_FOLDER_NAME /SDP_SCRIPT_NAME
 
+        locals_ = locals()
         for local in (local for local in locals_ if local != "ctx"):
             ctx.obj[local] = locals_[local]
     else:
@@ -94,6 +95,8 @@ def entrypoint(ctx):
 def install(ctx, force):
     cmus_config = ctx.obj["cmus_config"]
     cmus_osx_base_path = ctx.obj["cmus_osx_base_path"]
+    rc_script_path = ctx.obj["rc_script_path"]
+    sdp_script_path = ctx.obj["sdp_script_path"]
 
     cmus_osx_base_path.mkdir(exist_ok=True)
 
@@ -102,9 +105,6 @@ def install(ctx, force):
         with open(script_path, "w") as f:
             f.write(f"{SCRIPTS[script_name]}\n")
         chmod(script_path, 0o744)
-
-    rc_script_path = cmus_osx_base_path / RC_SCRIPT_NAME
-    sdp_script_path = cmus_osx_base_path / SDP_SCRIPT_NAME
 
     write_rc = True
 
@@ -172,6 +172,8 @@ def install(ctx, force):
 def uninstall(ctx):
     cmus_config = ctx.obj["cmus_config"]
     cmus_osx_base_path = ctx.obj["cmus_osx_base_path"]
+    rc_script_path = ctx.obj["rc_script_path"]
+    sdp_script_path = ctx.obj["sdp_script_path"]
 
     try:
         rmtree(cmus_osx_base_path)
@@ -183,9 +185,6 @@ def uninstall(ctx):
     if cmus_instances is not None:
         for pid in cmus_instances:
             kill(pid, SIGTERM)
-
-    rc_script_path = cmus_osx_base_path / RC_SCRIPT_NAME
-    sdp_script_path = cmus_osx_base_path / SDP_SCRIPT_NAME
 
     write_rc = False
 

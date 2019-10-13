@@ -17,10 +17,8 @@ from typing import Union
 
 
 def locate_cmus_base_path() -> Optional[Path]:
-    for path in (
-        path.expanduser() for path in (Path("~/.config/cmus/"), Path("~/.cmus/"))
-    ):
-        if path.is_dir():
+    for path in Path("~/.config/cmus/"), Path("~/.cmus/"):
+        if path.expanduser().is_dir():
             return path
     return None
 
