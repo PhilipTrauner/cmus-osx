@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "cmus-osx"
-version = "3.0.2"
+version = "3.0.3"
 description = "Adds track change notifications, and media key support to cmus."
 authors = ["Philip Trauner <philip.trauner@arztpraxis.io>"]
 license = "MIT"
