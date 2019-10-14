@@ -34,6 +34,7 @@ SCRIPTS: Dict[str, str] = {
 }
 
 COULD_NOT_LOCATED_CMUS_DIRECTORY = 1
+AUTOSAVE_MISSING = 2
 
 ENV_VAR_PREFIX = "CMUS_OSX"
 ENV: Dict[str, Default] = {

@@ -14,6 +14,7 @@ import click
 from click import echo
 from click import style
 
+from .constants import AUTOSAVE_MISSING
 from .constants import CMUS_OSX_FOLDER_NAME
 from .constants import CONFIG_NAME
 from .constants import COULD_NOT_LOCATED_CMUS_DIRECTORY
@@ -66,6 +67,16 @@ def entrypoint(ctx):
         if not config_path.is_file():
             with open(config_path, "w") as f:
                 f.write(template(ENV_VAR_PREFIX, ENV))
+
+        if not cmus_config.rc_path.is_file():
+            cmus_config.rc_path.touch()
+
+        if not cmus_config.autosave_path.is_file():
+            echo(
+                f"{style('ERROR', fg='red')}: cmus config file missing (launch cmus at least once "
+                "before attempting installation)"
+            )
+            exit(AUTOSAVE_MISSING)
 
         locals_ = locals()
 
