@@ -53,4 +53,9 @@ ENV: Dict[str, Default] = {
         transformer=lambda value: Path(value),
         hint="Fallback icon if album artwork extraction fails",
     ),
+    "THROTTLE_INTERVAL": Default(
+        0.0,
+        validator=lambda value: value >= 0,
+        hint="Throttle interval (adjust if experiencing duplicated key-pressses)",
+    ),
 }
