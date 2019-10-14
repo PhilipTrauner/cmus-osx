@@ -30,8 +30,8 @@ CMUS_OSX_FOLDER_NAME = "cmus-osx"
 CONFIG_NAME = "cmus-osx.conf"
 
 SCRIPTS: Dict[str, str] = {
-    RC_SCRIPT_NAME: f"#!/bin/sh\n\n{str(INTERPRETER_PATH)} {str(RC_PATH)}",
-    SDP_SCRIPT_NAME: f'#!/bin/sh\n\n{str(INTERPRETER_PATH)} {str(SDP_PATH)} "${{@}}"',
+    RC_SCRIPT_NAME: f"#!/bin/sh\n\nexec {str(INTERPRETER_PATH)} {str(RC_PATH)}",
+    SDP_SCRIPT_NAME: f'#!/bin/sh\n\nexec {str(INTERPRETER_PATH)} {str(SDP_PATH)} "${{@}}"',
 }
 
 COULD_NOT_LOCATED_CMUS_DIRECTORY = 1
