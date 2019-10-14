@@ -1,5 +1,5 @@
 from os import _exit as exit
-from subprocess import call
+from subprocess import call as call_
 from subprocess import CalledProcessError
 from subprocess import check_output
 from threading import Thread
@@ -12,6 +12,25 @@ from AppKit import NSApplicationActivationPolicyProhibited
 from AppKit import NSKeyUp
 from AppKit import NSSystemDefined
 from PyObjCTools import AppHelper
+
+from cmus_osx.constants import CMUS_OSX_FOLDER_NAME
+from cmus_osx.constants import CONFIG_NAME
+from cmus_osx.constants import ENV
+from cmus_osx.constants import ENV_VAR_PREFIX
+from cmus_osx.env import build_env
+from cmus_osx.util import locate_cmus_base_path
+from cmus_osx.util import source_env_file
+from cmus_osx.util import throttle
+
+cmus_base_path = locate_cmus_base_path()
+
+if cmus_base_path is not None:
+    source_env_file(cmus_base_path / CMUS_OSX_FOLDER_NAME / CONFIG_NAME)
+
+# Use defaults values if config file can't be located
+env = build_env(ENV_VAR_PREFIX, ENV)
+
+call = throttle(env.throttle_interval)(call_)
 
 
 class KeySocketApp(NSApplication):
