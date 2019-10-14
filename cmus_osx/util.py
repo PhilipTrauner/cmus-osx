@@ -6,6 +6,7 @@ from subprocess import CalledProcessError
 from subprocess import check_output
 from subprocess import PIPE
 from subprocess import Popen
+from time import time
 from typing import Any
 from typing import Callable
 from typing import List
@@ -76,3 +77,24 @@ def get_cmus_instances() -> Optional[List[int]]:
         ]
     except CalledProcessError:
         return None
+
+
+# https://gist.github.com/walkermatt/2871026#gistcomment-2280711
+def throttle(interval: Union[float, int]):
+    """Decorator ensures function that can only be called once every `s` seconds.
+    """
+
+    def decorate(fn: Callable) -> Callable:
+        t = None
+
+        def wrapped(*args, **kwargs):
+            nonlocal t
+            t_ = time()
+            if t is None or t_ - t >= interval:
+                result = fn(*args, **kwargs)
+                t = time()
+                return result
+
+        return wrapped
+
+    return decorate
