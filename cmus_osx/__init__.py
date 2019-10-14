@@ -44,7 +44,9 @@ class CmusConfig:
         base_path = locate_cmus_base_path()
         if base_path is not None:
             return CmusConfig._CmusConfig(
-                base_path, base_path.expanduser() / "rc", base_path.expanduser() / "autosave"
+                base_path,
+                base_path.expanduser() / "rc",
+                base_path.expanduser() / "autosave",
             )
         else:
             return None
@@ -78,7 +80,7 @@ def entrypoint(ctx):
             exit(AUTOSAVE_MISSING)
 
         rc_script_path = cmus_config.base_path / CMUS_OSX_FOLDER_NAME / RC_SCRIPT_NAME
-        sdp_script_path = cmus_config.base_path / CMUS_OSX_FOLDER_NAME /SDP_SCRIPT_NAME
+        sdp_script_path = cmus_config.base_path / CMUS_OSX_FOLDER_NAME / SDP_SCRIPT_NAME
 
         locals_ = locals()
         for local in (local for local in locals_ if local != "ctx"):
