@@ -78,8 +78,9 @@ def entrypoint(ctx):
 
 
 @entrypoint.command()
+@click.option("-f", "--force", is_flag=True)
 @click.pass_context
-def install(ctx):
+def install(ctx, force):
     cmus_config = ctx.obj["cmus_config"]
     cmus_osx_base_path = ctx.obj["cmus_osx_base_path"]
 
@@ -125,7 +126,7 @@ def install(ctx):
                     write_autosave = True
                 elif Path(sdp_value) != sdp_script_path:
                     # Ask for permission
-                    if click.confirm(
+                    if force or click.confirm(
                         f"{style('WARNING', fg='yellow')}: "
                         f"'status_display_program' currently set to '{sdp_value}', "
                         "override?"
