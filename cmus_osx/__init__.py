@@ -40,13 +40,11 @@ class CmusConfig:
         # cmus config file
         autosave_path: Path
 
-    def __new__(self) -> Optional["CmusConfig._CmusConfig"]:
+    def __new__(self) -> Optional["CmusConfig._CmusConfig"]:  # type: ignore
         base_path = locate_cmus_base_path()
         if base_path is not None:
             return CmusConfig._CmusConfig(
-                base_path,
-                base_path.expanduser() / "rc",
-                base_path.expanduser() / "autosave",
+                base_path, base_path / "rc", base_path / "autosave"
             )
         else:
             return None
@@ -61,7 +59,7 @@ def entrypoint(ctx):
     cmus_config = CmusConfig()
 
     if cmus_config is not None:
-        cmus_osx_base_path = cmus_config.base_path.expanduser() / CMUS_OSX_FOLDER_NAME
+        cmus_osx_base_path = cmus_config.base_path / CMUS_OSX_FOLDER_NAME
         cmus_osx_base_path.mkdir(exist_ok=True)
 
         config_path = cmus_osx_base_path / CONFIG_NAME
