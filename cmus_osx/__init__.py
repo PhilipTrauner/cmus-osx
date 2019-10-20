@@ -124,7 +124,7 @@ def install(ctx, force):
             tmp_rc_file.write(line)
 
     if write_rc:
-        tmp_rc_file.write(f"shell {str(unexpanduser(rc_script_path))} &\n")
+        tmp_rc_file.write(f"shell {str(unexpanded_rc_script_path)} &\n")
         rename(tmp_rc_file.name, cmus_config.rc_path)
     else:
         remove(tmp_rc_file.name)
