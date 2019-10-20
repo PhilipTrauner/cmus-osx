@@ -1,7 +1,6 @@
 from os import environ
 from os import getenv
 from pathlib import Path
-from re import fullmatch
 from shutil import which
 from subprocess import CalledProcessError
 from subprocess import check_output
@@ -100,10 +99,7 @@ def throttle(interval: Union[float, int]):
 
 
 def unexpanduser(path: Path) -> Path:
-    home_pattern = "^%s/.*" % Path.home()
-
-    match = fullmatch(home_pattern, str(path))
-    if match:
-        return Path(str(match[0]).replace(str(Path.home()), "~"))
-    else:
+    try:
+        return Path("~") / path.relative_to(Path.home())
+    except ValueError:
         return path
