@@ -29,6 +29,7 @@ from .env import template
 from .util import get_cmus_instances
 from .util import locate_cmus_base_path
 from .util import locate_editor
+from .util import unexpanduser
 
 
 class CmusConfig:
@@ -40,7 +41,7 @@ class CmusConfig:
         # cmus config file
         autosave_path: Path
 
-    def __new__(self) -> Optional["CmusConfig._CmusConfig"]:
+    def __new__(self) -> Optional["CmusConfig._CmusConfig"]:  # type: ignore
         base_path = locate_cmus_base_path()
         if base_path is not None:
             return CmusConfig._CmusConfig(
@@ -63,7 +64,6 @@ def entrypoint(ctx):
         cmus_osx_base_path.mkdir(exist_ok=True)
 
         config_path = cmus_osx_base_path / CONFIG_NAME
-
         if not config_path.is_file():
             with open(config_path, "w") as f:
                 f.write(template(ENV_VAR_PREFIX, ENV))
@@ -78,8 +78,10 @@ def entrypoint(ctx):
             )
             exit(AUTOSAVE_MISSING)
 
-        locals_ = locals()
+        rc_script_path = cmus_config.base_path / CMUS_OSX_FOLDER_NAME / RC_SCRIPT_NAME
+        sdp_script_path = cmus_config.base_path / CMUS_OSX_FOLDER_NAME / SDP_SCRIPT_NAME
 
+        locals_ = locals()
         for local in (local for local in locals_ if local != "ctx"):
             ctx.obj[local] = locals_[local]
     else:
@@ -94,6 +96,8 @@ def entrypoint(ctx):
 def install(ctx, force):
     cmus_config = ctx.obj["cmus_config"]
     cmus_osx_base_path = ctx.obj["cmus_osx_base_path"]
+    rc_script_path = ctx.obj["rc_script_path"]
+    sdp_script_path = ctx.obj["sdp_script_path"]
 
     cmus_osx_base_path.mkdir(exist_ok=True)
 
@@ -103,27 +107,31 @@ def install(ctx, force):
             f.write(f"{SCRIPTS[script_name]}\n")
         chmod(script_path, 0o744)
 
-    rc_script_path = cmus_osx_base_path / RC_SCRIPT_NAME
-    sdp_script_path = cmus_osx_base_path / SDP_SCRIPT_NAME
-
     write_rc = True
+
+    unexpanded_rc_script_path = unexpanduser(rc_script_path)
 
     tmp_rc_file = NamedTemporaryFile("w", delete=False)
     with open(cmus_config.rc_path, "r") as f:
         for line in f:
             match = RC_ENTRY_REGEX.match(line)
             # Found invocation of 'rc' script
-            if match is not None and Path(match.group(1)) == rc_script_path:
+            if match is not None and Path(match.group(1)) in (
+                rc_script_path,
+                unexpanded_rc_script_path,
+            ):
                 write_rc = False
             tmp_rc_file.write(line)
 
     if write_rc:
-        tmp_rc_file.write(f"shell {rc_script_path} &\n")
+        tmp_rc_file.write(f"shell {str(unexpanded_rc_script_path)} &\n")
         rename(tmp_rc_file.name, cmus_config.rc_path)
     else:
         remove(tmp_rc_file.name)
 
     write_autosave = False
+
+    unexpand_sdp_script_path = unexpanduser(sdp_script_path)
 
     tmp_autosave_file = NamedTemporaryFile("w", delete=False)
     with open(cmus_config.autosave_path, "r") as f:
@@ -135,7 +143,7 @@ def install(ctx, force):
                 if sdp_value == "":
                     # Write 'status_display_program' without asking for permission
                     write_autosave = True
-                elif Path(sdp_value) != sdp_script_path:
+                elif Path(sdp_value) not in (sdp_script_path, unexpand_sdp_script_path):
                     # Ask for permission
                     if force or click.confirm(
                         f"{style('WARNING', fg='yellow')}: "
@@ -146,11 +154,12 @@ def install(ctx, force):
                     else:
                         echo(
                             f"{style('WARNING', fg='yellow')}: Manually set "
-                            f"'status_display_program' to '{str(sdp_script_path)}'"
+                            "'status_display_program' to "
+                            f"'{str(unexpand_sdp_script_path)}'"
                         )
                 if write_autosave:
                     tmp_autosave_file.write(
-                        f"set status_display_program={str(sdp_script_path)}\n"
+                        f"set status_display_program={str(unexpand_sdp_script_path)}\n"
                     )
             else:
                 tmp_autosave_file.write(line)
@@ -172,6 +181,8 @@ def install(ctx, force):
 def uninstall(ctx):
     cmus_config = ctx.obj["cmus_config"]
     cmus_osx_base_path = ctx.obj["cmus_osx_base_path"]
+    rc_script_path = ctx.obj["rc_script_path"]
+    sdp_script_path = ctx.obj["sdp_script_path"]
 
     try:
         rmtree(cmus_osx_base_path)
@@ -183,9 +194,6 @@ def uninstall(ctx):
     if cmus_instances is not None:
         for pid in cmus_instances:
             kill(pid, SIGTERM)
-
-    rc_script_path = cmus_osx_base_path / RC_SCRIPT_NAME
-    sdp_script_path = cmus_osx_base_path / SDP_SCRIPT_NAME
 
     write_rc = False
 

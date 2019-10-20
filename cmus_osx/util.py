@@ -98,3 +98,10 @@ def throttle(interval: Union[float, int]):
         return wrapped
 
     return decorate
+
+
+def unexpanduser(path: Path) -> Path:
+    try:
+        return Path("~") / path.relative_to(Path.home())
+    except ValueError:
+        return path

@@ -5,11 +5,12 @@ from sys import modules
 from typing import Dict
 
 from .env import Default
+from .util import unexpanduser
 
 STATUS_DISPLAY_PROGRAM_REGEX = re_compile(r"set status_display_program=(.*)")
 RC_ENTRY_REGEX = re_compile(r"shell\s(.*)\s&")
 
-INTERPRETER_PATH = Path(executable)
+INTERPRETER_PATH = unexpanduser(Path(executable))
 MODULE_BASE_PATH = Path(modules[__name__].__file__).parent
 
 RESOURCE_PATH = MODULE_BASE_PATH / "resource"
@@ -21,9 +22,9 @@ SDP_SCRIPT_NAME = "status_display_program.sh"
 
 APP_ICON_PATH = RESOURCE_PATH / APP_ICON_NAME
 
-RC_PATH = PAYLOAD_PATH / "media_keys.py"
+RC_PATH = unexpanduser(PAYLOAD_PATH) / "media_keys.py"
 # (s)tatus_(d)isplay_(p)rogram
-SDP_PATH = PAYLOAD_PATH / "notify.py"
+SDP_PATH = unexpanduser(PAYLOAD_PATH) / "notify.py"
 
 CMUS_OSX_FOLDER_NAME = "cmus-osx"
 CONFIG_NAME = "cmus-osx.conf"
