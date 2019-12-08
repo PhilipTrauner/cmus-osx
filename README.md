@@ -39,6 +39,20 @@ export PYTHON_CONFIGURE_OPTS="--enable-framework"
 cmus-osx config
 ```
 
+## Development
+
+Prepare environment
+```
+make setup
+```
+
+Make changes and install new version
+```
+make install
+```
+
+Poetry will recognise when running from virtualenv.
+
 ### Credits
 * [azadkuh](https://github.com/azadkuh): all versions up to and including v1.2.0
 * [PhilipTrauner](https://github.com/PhilipTrauner): all following versions
