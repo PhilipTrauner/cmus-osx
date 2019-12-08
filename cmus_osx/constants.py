@@ -20,7 +20,7 @@ APP_ICON_NAME = "icon.png"
 RC_SCRIPT_NAME = "rc_entry.sh"
 SDP_SCRIPT_NAME = "status_display_program.sh"
 
-APP_ICON_PATH = RESOURCE_PATH / APP_ICON_NAME
+APP_ICON_PATH = unexpanduser(RESOURCE_PATH) / APP_ICON_NAME
 
 RC_PATH = unexpanduser(PAYLOAD_PATH) / "media_keys.py"
 # (s)tatus_(d)isplay_(p)rogram
