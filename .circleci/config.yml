@@ -2,9 +2,9 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/python:3.7.4
+      - image: circleci/python:3.7.5
     environment:
-      POETRY_VERSION: 1.0.0a5
+      POETRY_VERSION: 1.0.0b9
     steps:
       - checkout
       - run:
@@ -18,7 +18,7 @@ jobs:
             sudo pip install pre-commit
             mkdir -p /home/circleci/.config/pypoetry/
             echo "[repositories]" > /home/circleci/.config/pypoetry/config.toml
-            poetry config settings.virtualenvs.create false
+            poetry config virtualenvs.create false
             pre-commit install-hooks
       - run:
           name: Lint
