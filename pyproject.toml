@@ -9,7 +9,7 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.7"
 mutagen = "^1.42"
-pyobjc = "^5.2"
+pyobjc = "^6.2"
 click = "^7.0"
 Pillow = "^6.1.0"
 
