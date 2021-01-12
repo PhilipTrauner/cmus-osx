@@ -1,6 +1,7 @@
 import sys
 from io import BytesIO
 from os.path import isfile
+from pathlib import Path
 from platform import mac_ver
 from subprocess import call
 
@@ -97,6 +98,10 @@ if "album" in status:
 if "date" in status and status["date"].isnumeric():
     message += " (%s)" % status["date"]
 
+# If no metadata is found, use filename instead
+if not subtitle or not message:
+    filename = Path(status["file"]).name
+    subtitle = filename
 
 center = NSUserNotificationCenter.defaultUserNotificationCenter()
 notification = NSUserNotification.alloc().init()
