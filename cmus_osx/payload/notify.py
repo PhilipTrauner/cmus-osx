@@ -1,6 +1,7 @@
 import sys
 from io import BytesIO
 from os.path import isfile
+from pathlib import Path
 from platform import mac_ver
 from subprocess import call
 
@@ -59,18 +60,19 @@ if "url" in status:
         status["title"] = status["url"]
 elif "file" in status and isfile(status["file"]):
     file = File(status["file"])
-    # id3
-    if "APIC:" in file:
-        cover = file["APIC:"]
-        cover = cover.data
-    # mp4
-    elif "covr" in file:
-        covers = file["covr"]
-        if len(covers) > 0:
-            cover = covers[0]
-    # flac
-    elif hasattr(file, "pictures") and len(file.pictures) > 0:
-        cover = file.pictures[0].data
+    if file is not None:
+        # id3
+        if "APIC:" in file:
+            cover = file["APIC:"]
+            cover = cover.data
+        # mp4
+        elif "covr" in file:
+            covers = file["covr"]
+            if len(covers) > 0:
+                cover = covers[0]
+        # flac
+        elif hasattr(file, "pictures") and len(file.pictures) > 0:
+            cover = file.pictures[0].data
 
 if env.notification_on_pause:
     title = "cmus %s" % status["status"]
@@ -96,6 +98,10 @@ if "album" in status:
 if "date" in status and status["date"].isnumeric():
     message += " (%s)" % status["date"]
 
+# If no metadata is found, use filename instead
+if not subtitle or not message:
+    filename = Path(status["file"]).name
+    subtitle = filename
 
 center = NSUserNotificationCenter.defaultUserNotificationCenter()
 notification = NSUserNotification.alloc().init()
