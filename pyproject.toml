@@ -7,9 +7,9 @@ license = "MIT"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.9"
 mutagen = "^1.42"
-pyobjc = "^6.2"
+pyobjc = "^10.3.1"
 click = "^7.0"
 Pillow = "^8.0"
 
@@ -20,5 +20,5 @@ pre-commit = "^1.18"
 cmus-osx = "cmus_osx:entrypoint"
 
 [build-system]
-requires = ["poetry>=0.12"]
+requires = ["poetry>=1.8.3"]
 build-backend = "poetry.masonry.api"
